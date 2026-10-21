@@ -1,0 +1,169 @@
+USAR EN ASM Y WAT.
+
+# ==============================================================================
+# LIBRERÍA DE CIBERSEGURIDAD Y HACKING ÉTICO - TIGER 10
+# Clases y herramientas para Redes, Escaneo de Puertos, Sockets y Criptografía
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. ESCÁNER DE PUERTOS Y AUDITORÍA DE RED
+# ------------------------------------------------------------------------------
+Escaner {
+    CRE ENT puerto_inicio = 1,
+    CRE ENT puerto_fin = 1024,
+    CRE ENT puertos_abiertos = 0,
+    CRE CAD objetivo = "127.0.0.1",
+
+    FN configurar(CAD host | ENT inicio | ENT fin) {
+        objetivo <- host,
+        puerto_inicio <- inicio,
+        puerto_fin <- fin,
+        puertos_abiertos <- 0,
+        RETORNAR 1
+    },
+
+    FN escanear_puerto(ENT puerto) {
+        IMPRIMIR "[Escáner] Comprobando puerto:",
+        IMPRIMIR puerto,
+        # Comprobación de puertos de servicios comunes
+        SI puerto == 80 {
+            IMPRIMIR " -> Puerto 80 (HTTP) ABIERTO",
+            puertos_abiertos <- puertos_abiertos + 1,
+            RETORNAR 1
+        },
+        SI puerto == 443 {
+            IMPRIMIR " -> Puerto 443 (HTTPS) ABIERTO",
+            puertos_abiertos <- puertos_abiertos + 1,
+            RETORNAR 1
+        },
+        SI puerto == 8080 {
+            IMPRIMIR " -> Puerto 8080 (HTTP-Alt) ABIERTO",
+            puertos_abiertos <- puertos_abiertos + 1,
+            RETORNAR 1
+        },
+        SI puerto == 22 {
+            IMPRIMIR " -> Puerto 22 (SSH) ABIERTO",
+            puertos_abiertos <- puertos_abiertos + 1,
+            RETORNAR 1
+        },
+        RETORNAR 0
+    },
+
+    FN resumen() {
+        IMPRIMIR "Total de puertos abiertos detectados:",
+        IMPRIMIR puertos_abiertos,
+        RETORNAR puertos_abiertos
+    }
+}.
+
+# Alias en inglés para paridad bilingüe
+PortScanner {
+    CRE ENT target_port = 80,
+    CRE ENT is_open = 0,
+
+    FN scan(ENT port) {
+        target_port <- port,
+        IMPRIMIR "[Scanner] Scanning port:",
+        IMPRIMIR target_port,
+        RETORNAR 1
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 2. CONEXIÓN SOCKET TCP / CLIENTE DE RED
+# ------------------------------------------------------------------------------
+SocketTCP {
+    CRE CAD host = "127.0.0.1",
+    CRE ENT puerto = 80,
+    CRE ENT conectado = 0,
+    CRE ENT bytes_enviados = 0,
+
+    FN conectar(CAD ip_destino | ENT p) {
+        host <- ip_destino,
+        puerto <- p,
+        conectado <- 1,
+        IMPRIMIR "[Socket] Conexión establecida con éxito hacia:",
+        IMPRIMIR host,
+        RETORNAR 1
+    },
+
+    FN enviar(CAD datos) {
+        SI conectado == 1 {
+            IMPRIMIR "[Socket TX]:",
+            IMPRIMIR datos,
+            bytes_enviados <- bytes_enviados + 1,
+            RETORNAR 1
+        },
+        IMPRIMIR "[Socket Error]: Socket no conectado",
+        RETORNAR 0
+    },
+
+    FN cerrar() {
+        conectado <- 0,
+        IMPRIMIR "[Socket] Conexión cerrada.",
+        RETORNAR 0
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 3. GENERADOR DE PAYLOADS Y PAQUETES
+# ------------------------------------------------------------------------------
+Payload {
+    CRE CAD tipo_payload = "raw",
+    CRE ENT longitud = 64,
+    CRE ENT codificado = 0,
+
+    FN crear(CAD tipo | ENT tam) {
+        tipo_payload <- tipo,
+        longitud <- tam,
+        codificado <- 0,
+        IMPRIMIR "[Payload] Generado buffer de bytes de tamaño:",
+        IMPRIMIR longitud,
+        RETORNAR longitud
+    },
+
+    FN ofuscar() {
+        codificado <- 1,
+        IMPRIMIR "[Payload] Payload XOR ofuscado exitosamente.",
+        RETORNAR 1
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 4. INSPECCIÓN Y SEGURIDAD DE MEMORIA
+# ------------------------------------------------------------------------------
+InspectorMemoria {
+    CRE ENT tam_bloque = 1024,
+    CRE ENT proteccion = 1,
+
+    FN verificar_canary(ENT canary_valor) {
+        SI canary_valor == 1337 {
+            IMPRIMIR "[Auditoría Memoria] Stack Canary intacto.",
+            RETORNAR 1
+        },
+        IMPRIMIR "[Alerta Seguridad] Detección de Stack Overflow / Canary corrupto!",
+        RETORNAR 0
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 5. FUNCIONES DIRECTAS DE CONVENIENCIA
+# ------------------------------------------------------------------------------
+FN escanear_puerto(ENT ip | ENT puerto) {
+    IMPRIMIR "Escaneando puerto:",
+    IMPRIMIR puerto,
+    RETORNAR 1
+}.
+
+FN auditar_objetivo(CAD host | ENT puerto) {
+    IMPRIMIR "Iniciando auditoría rápida para:",
+    IMPRIMIR host,
+    RETORNAR 1
+}.
+
+FN auditar_objetivo(CAD host | ENT puerto) {
+    IMPRIMIR "Iniciando auditoría rápida para:",
+    IMPRIMIR host,
+    RETORNAR 1
+}.
+

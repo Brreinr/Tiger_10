@@ -1,0 +1,113 @@
+{
+  "name": "tiger-language",
+  "displayName": "Tiger Language Support",
+  "description": "Resaltado de sintaxis con colores, icono personalizado, sangría inteligente y snippets para el lenguaje Tiger (.tg).",
+  "version": "0.5.0",
+  "publisher": "tiger-lang",
+  "icon": "icons/tiger-logo.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Themes"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "tiger",
+        "aliases": [
+          "Tiger",
+          "tiger"
+        ],
+        "extensions": [
+          ".tg",
+          ".tgi"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/tiger-icon.png",
+          "dark": "./icons/tiger-icon.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "tiger",
+        "scopeName": "source.tiger",
+        "path": "./syntaxes/tiger.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "tiger",
+        "path": "./snippets/tiger.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "tiger-icons",
+        "label": "Tiger File Icons",
+        "path": "./icons/tiger-icon-theme.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "tiger.run",
+        "title": "Tiger: Ejecutar archivo (.tg)",
+        "icon": "$(play)"
+      },
+      {
+        "command": "tiger.runNative",
+        "title": "Tiger: Ejecutar binario nativo (Windows x64)",
+        "icon": "$(run)"
+      },
+      {
+        "command": "tiger.compileAsm",
+        "title": "Tiger: Compilar a Ensamblador (.asm)",
+        "icon": "$(file-code)"
+      },
+      {
+        "command": "tiger.compileWat",
+        "title": "Tiger: Compilar a WebAssembly (.wat)",
+        "icon": "$(globe)"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "command": "tiger.run",
+          "when": "resourceExtname == .tg || resourceExtname == .tgi",
+          "group": "navigation@1"
+        },
+        {
+          "command": "tiger.runNative",
+          "when": "resourceExtname == .tg || resourceExtname == .tgi",
+          "group": "navigation@2"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "tiger.run",
+          "when": "resourceExtname == .tg || resourceExtname == .tgi",
+          "group": "1_tiger"
+        },
+        {
+          "command": "tiger.runNative",
+          "when": "resourceExtname == .tg || resourceExtname == .tgi",
+          "group": "1_tiger"
+        }
+      ]
+    },
+    "themes": [
+      {
+        "id": "tiger-neon",
+        "label": "Tiger Neon (Cyber Orange)",
+        "uiTheme": "vs-dark",
+        "path": "./themes/tiger-neon.json"
+      }
+    ]
+  },
+  "main": "./extension.js"
+}

@@ -1,0 +1,131 @@
+USAR EN ASM Y WAT.
+
+# ==============================================================================
+# LIBRERÍA DE INTELIGENCIA ARTIFICIAL Y REDES NEURONALES - TIGER 10
+# Clases para Redes Multicapa, Funciones de Activación, Pesos y Tensores
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. PERCEPTRÓN Y RED NEURONAL MULTICAPA (MLP)
+# ------------------------------------------------------------------------------
+RedNeural {
+    CRE ENT total_capas = 3,
+    CRE ENT neuronas_entrada = 4,
+    CRE ENT neuronas_ocultas = 8,
+    CRE ENT neuronas_salida = 2,
+    CRE ENT tasa_aprendizaje = 1,
+
+    FN configurar(ENT entrada | ENT ocultas | ENT salida) {
+        neuronas_entrada <- entrada,
+        neuronas_ocultas <- ocultas,
+        neuronas_salida <- salida,
+        IMPRIMIR "[RedNeural] Topologia configurada exitosamente.",
+        RETORNAR 1
+    },
+
+    # Feedforward simple con activación escalón / relu
+    FN predecir(ENT entrada_val) {
+        SI entrada_val > 0 {
+            RETORNAR entrada_val
+        },
+        RETORNAR 0
+    },
+
+    FN entrenar(ENT epocas) {
+        IMPRIMIR "[RedNeural] Entrenando modelo por epocas:",
+        IMPRIMIR epocas,
+        RETORNAR epocas
+    }
+}.
+
+# Alias en inglés para compatibilidad bilingüe
+NeuralNetwork {
+    CRE ENT layers = 3,
+    CRE ENT neurons = 64,
+
+    FN predict(ENT input_val) {
+        SI input_val > 0 {
+            RETORNAR input_val
+        },
+        RETORNAR 0
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 2. CAPA DENSA / LINEAL (DENSE LAYER)
+# ------------------------------------------------------------------------------
+CapaDensa {
+    CRE ENT entradas = 4,
+    CRE ENT salidas = 4,
+    CRE ENT sesgo = 1,
+
+    FN iniciar(ENT in_dim | ENT out_dim | ENT bias) {
+        entradas <- in_dim,
+        salidas <- out_dim,
+        sesgo <- bias,
+        RETORNAR 1
+    },
+
+    FN propagar(ENT entrada | ENT peso) {
+        ENT producto = entrada * peso,
+        ENT activacion = producto + sesgo,
+        RETORNAR activacion
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 3. FUNCIONES DE ACTIVACIÓN (RELU, SIGMOIDE, PASO)
+# ------------------------------------------------------------------------------
+Activacion {
+    # Rectified Linear Unit (ReLU)
+    FN relu(ENT x) {
+        SI x > 0 {
+            RETORNAR x
+        },
+        RETORNAR 0
+    },
+
+    # Función Paso Binario
+    FN paso(ENT x) {
+        SI x >= 0 {
+            RETORNAR 1
+        },
+        RETORNAR 0
+    },
+
+    # Aproximación de Signo
+    FN signo(ENT x) {
+        SI x > 0 {
+            RETORNAR 1
+        },
+        SI x < 0 {
+            RETORNAR -1
+        },
+        RETORNAR 0
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 4. FUNCIONES DIRECTAS DE CONVENIENCIA
+# ------------------------------------------------------------------------------
+FN relu(ENT x) {
+    SI x > 0 {
+        RETORNAR x
+    },
+    RETORNAR 0
+}.
+
+FN paso_binario(ENT x) {
+    SI x >= 0 {
+        RETORNAR 1
+    },
+    RETORNAR 0
+}.
+
+FN paso_binario(ENT x) {
+    SI x >= 0 {
+        RETORNAR 1
+    },
+    RETORNAR 0
+}.
+

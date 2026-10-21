@@ -1,0 +1,89 @@
+{
+  "Función": {
+    "prefix": "fn",
+    "body": [
+      "FN ${1:data} (${2:num, nivel}) {",
+      "\t${0:RETORNAR num + nivel}",
+      "}"
+    ],
+    "description": "Definir una función Tiger con parámetros"
+  },
+  "Clase/Molde": {
+    "prefix": "clase",
+    "body": [
+      "${1:Juego} {",
+      "\tCRE ${2|ENT,DEC,CAD|} ${3:num} = ${4:1},",
+      "\tFN ${5:data} (${6:num, nivel}) {",
+      "\t\t${7:RETORNAR num + nivel}",
+      "\t}",
+      "}"
+    ],
+    "description": "Definir una clase/molde en Tiger"
+  },
+  "Instancia": {
+    "prefix": "instancia",
+    "body": [
+      "${1:juego}(${2:Juego}) {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Instanciar un objeto de clase en Tiger"
+  },
+  "Imprimir": {
+    "prefix": "imp",
+    "body": [
+      "IMPRIMIR ${1:Dato}"
+    ],
+    "description": "Imprimir un valor o variable"
+  },
+  "Condicional Si/Sino": {
+    "prefix": "si",
+    "body": [
+      "SI ${1:condicion} {",
+      "\t${2:# proceso si verdadero}",
+      "} SINO {",
+      "\t${3:# proceso si falso}",
+      "}"
+    ],
+    "description": "Bloque condicional SI / SINO"
+  },
+  "Ciclo": {
+    "prefix": "ciclo",
+    "body": [
+      "CICLO ${1:condicion} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Bucle CICLO"
+  },
+  "Variable": {
+    "prefix": "var",
+    "body": [
+      "VAR ${1:nombre} = ${2:valor}"
+    ],
+    "description": "Declarar variable mutable"
+  },
+  "Constante": {
+    "prefix": "const",
+    "body": [
+      "CONST ${1:nombre} = ${2:valor}"
+    ],
+    "description": "Declarar constante inmutable"
+  },
+  "Comando Macro": {
+    "prefix": "cmd",
+    "body": [
+      "COMANDO ${1:nombre}(${2:valor}) {",
+      "\t${0:IMPRIMIR valor}",
+      "}"
+    ],
+    "description": "Definir un comando/macro Tiger"
+  },
+  "Puntero PointC": {
+    "prefix": "ptr",
+    "body": [
+      "PTR ${1|INT,ENT|} ${2:nombre} = @${3:0x1000}"
+    ],
+    "description": "Declarar un puntero directo de memoria PointC"
+  }
+}

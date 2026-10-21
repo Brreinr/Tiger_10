@@ -1,0 +1,64 @@
+TIGER COMMUNITY & EVALUATION LICENSE (TCEL)
+Copyright (c) 2026 Tiger Language Project / El Autor
+
+================================================================================
+ESPAÑOL: LICENCIA DE USO, EVALUACIÓN Y COMUNIDAD DE TIGER
+================================================================================
+
+Por la presente se concede autorización a cualquier persona que obtenga una copia 
+de este software ("Tiger Language") y los archivos asociados para:
+
+1. DERECHOS CONCEDIDOS:
+   a) Uso Personal y Educativo: Ejecutar, estudiar, probar y evaluar Tiger de forma 
+      completamente gratuita para propósitos personales, educativos y académicos.
+   b) Creación de Programas: Escribir, ejecutar y compilar tus propios programas 
+      escritos en lenguaje Tiger (.tg). El código que tú escribas en Tiger te 
+      pertenece al 100% a ti.
+   c) Aportes a la Comunidad: Reportar errores (issues), sugerir mejoras y enviar 
+      contribuciones (pull requests) al repositorio oficial.
+
+2. RESTRICCIONES Y PROTECCIÓN:
+   a) Prohibición Comercial No Autorizada: No está permitido vender, cobrar, 
+      sub-licenciar o comercializar directa o indirectamente el compilador Tiger, 
+      sus ejecutables (tiger.exe) o su código fuente sin la autorización escrita 
+      previa y explícita del autor.
+   b) Prohibición de Reetiquetado (Fork Comercial): No se permite clonar este 
+      proyecto para publicarlo o distribuirlo bajo otro nombre con fines de lucro.
+   c) Mención de Autoría: En cualquier copia, demostración o derivado no comercial, 
+      deberá mantenerse intacto este aviso de derechos de autor y de licencia.
+
+3. DESCARGO DE RESPONSABILIDAD:
+   EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O 
+   IMPLÍCITA. EN NINGÚN CASO EL AUTOR SERÁ RESPONSABLE DE NINGÚN RECLAMO, DAÑO U 
+   OTRA RESPONSABILIDAD QUE SURJA DEL USO DE ESTE SOFTWARE.
+
+================================================================================
+ENGLISH: TIGER USE, EVALUATION AND COMMUNITY LICENSE
+================================================================================
+
+Permission is hereby granted to any person obtaining a copy of this software 
+("Tiger Language") and associated documentation files:
+
+1. GRANTED RIGHTS:
+   a) Personal & Educational Use: Run, study, test, and evaluate Tiger free of charge 
+      for personal, research, academic, and non-commercial purposes.
+   b) User Programs: Write, run, and compile your own source code written in Tiger 
+      (.tg). All programs created by you using Tiger remain 100% your own property.
+   c) Community Contributions: Submit issue reports, suggestions, and pull requests 
+      to the official repository.
+
+2. RESTRICTIONS & IP PROTECTION:
+   a) No Unauthorized Commercial Exploitation: You may NOT sell, license, rent, 
+      charge fees for, or commercially distribute Tiger, its executables (tiger.exe), 
+      or its source code without express prior written consent from the author.
+   b) No Commercial Re-branding / Closed Forks: You may not clone, fork, or rebrand 
+      this project to distribute it as a proprietary or paid product.
+   c) Attribution: All permitted distributions or non-commercial derivations must 
+      preserve this copyright notice and permission terms intact.
+
+3. DISCLAIMER:
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+   AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR LIABILITY ARISING FROM ITS USE.
+

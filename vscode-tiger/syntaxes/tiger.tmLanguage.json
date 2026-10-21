@@ -1,0 +1,342 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Tiger",
+  "scopeName": "source.tiger",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#function_declaration"
+    },
+    {
+      "include": "#class_declaration"
+    },
+    {
+      "include": "#class_instantiation"
+    },
+    {
+      "include": "#member_access"
+    },
+    {
+      "include": "#macro_declaration"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#files"
+    },
+    {
+      "include": "#punctuation"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.number-sign.tiger",
+          "match": "#.*$"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.tiger",
+      "begin": "\"",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.tiger"
+        }
+      },
+      "end": "\"",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.end.tiger"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.tiger",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "function_declaration": {
+      "patterns": [
+        {
+          "begin": "\\b(FN|FUNCTION|DEF|FUNCION|FUNCIÓN)\\b\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.declaration.function.tiger"
+            },
+            "2": {
+              "name": "entity.name.function.tiger"
+            }
+          },
+          "end": "\\)",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.parameters.end.tiger"
+            }
+          },
+          "patterns": [
+            {
+              "match": "\\(",
+              "name": "punctuation.definition.parameters.begin.tiger"
+            },
+            {
+              "name": "storage.type.parameter.tiger",
+              "match": "\\b(INT|ENT|FLO|DEC|STR|CAD|PTR|BOOL)\\b"
+            },
+            {
+              "name": "variable.parameter.tiger",
+              "match": "[A-Za-z_][A-Za-z0-9_]*"
+            },
+            {
+              "name": "punctuation.separator.parameter.tiger",
+              "match": "[|,]"
+            }
+          ]
+        },
+        {
+          "match": "\\b(FN|FUNCTION|DEF|FUNCION|FUNCIÓN)\\b\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": {
+              "name": "keyword.declaration.function.tiger"
+            },
+            "2": {
+              "name": "entity.name.function.tiger"
+            }
+          }
+        }
+      ]
+    },
+    "macro_declaration": {
+      "patterns": [
+        {
+          "begin": "\\b(COMANDO|COMMAND|CMD)\\b\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.declaration.macro.tiger"
+            },
+            "2": {
+              "name": "entity.name.function.macro.tiger"
+            }
+          },
+          "end": "\\)",
+          "patterns": [
+            {
+              "name": "storage.type.parameter.tiger",
+              "match": "(?i)\\b(INT|ENT|FLO|DEC|STR|CAD|PTR)\\b"
+            },
+            {
+              "name": "variable.parameter.tiger",
+              "match": "[A-Za-z_][A-Za-z0-9_]*"
+            },
+            {
+              "name": "punctuation.separator.parameter.tiger",
+              "match": "[|,]"
+            }
+          ]
+        },
+        {
+          "match": "(?i)\\b(COMANDO|CMD)\\b\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": {
+              "name": "keyword.declaration.macro.tiger"
+            },
+            "2": {
+              "name": "entity.name.function.macro.tiger"
+            }
+          }
+        }
+      ]
+    },
+    "class_declaration": {
+      "patterns": [
+        {
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\{)",
+          "captures": {
+            "1": {
+              "name": "entity.name.type.class.tiger"
+            }
+          }
+        }
+      ]
+    },
+    "class_instantiation": {
+      "patterns": [
+        {
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*\\(\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*\\)\\s*(?=\\{)",
+          "captures": {
+            "1": {
+              "name": "variable.other.object.tiger"
+            },
+            "2": {
+              "name": "entity.name.type.class.tiger"
+            }
+          }
+        }
+      ]
+    },
+    "member_access": {
+      "patterns": [
+        {
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)-([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "captures": {
+            "1": {
+              "name": "variable.other.object.tiger"
+            },
+            "2": {
+              "name": "entity.name.function.member.tiger"
+            }
+          }
+        },
+        {
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)-([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": {
+              "name": "variable.other.object.tiger"
+            },
+            "2": {
+              "name": "variable.other.property.tiger"
+            }
+          }
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "variable.language.special.tiger",
+          "match": "\\b(TIGER|TIGRE)\\b"
+        },
+        {
+          "name": "keyword.control.conditional.tiger",
+          "match": "\\b(SI|IF|SINO|ELSE)\\b"
+        },
+        {
+          "name": "keyword.control.loop.tiger",
+          "match": "\\b(CICLO|LOOP|BUCLE|MIENTRAS|WHILE|PARA|FOR|VECES|TIMES|SALIR|BREAK|CONTINUAR|CONTINUE)\\b"
+        },
+        {
+          "name": "keyword.control.return.tiger",
+          "match": "\\b(RETORNAR|RETURN|RET|REGRESAR)\\b"
+        },
+        {
+          "name": "keyword.operator.logical.word.tiger",
+          "match": "\\b(Y|AND|O|OR|NO|NOT|ES|IS)\\b"
+        },
+        {
+          "name": "keyword.control.import.tiger",
+          "match": "\\b(USAR|USE|IMPORT|IMPORTAR|INCLUIR|INCLUDE)\\b"
+        },
+        {
+          "name": "keyword.control.directive.tiger",
+          "match": "\\b(EN|IN|DESTINO|TARGET|ENSAMBLADOR|ASSEMBLY|ASM|WAT|WASM|WEBASSEMBLY|WEBENSAMBLADOR)\\b"
+        },
+        {
+          "name": "storage.modifier.tiger",
+          "match": "\\b(VAR|CONST|CRE|CAMPO|FIELD|PROP|PROPERTY|PROPIEDAD)\\b"
+        },
+        {
+          "name": "storage.type.tiger",
+          "match": "\\b(CLASE|CLASS|TIPO|TYPE|PY|PYTHON|JSON|JS|JAVASCRIPT|NODE|C|CPP|CXX|DART|BI|BIN|BINARY|BINARIO|EXE|DLL|HTML|HTM|NOSQL|MONGO|MONGODB|PTR|POINTER|PUNTERO|MEM|INT|ENT|ENTERO|INTEGER|FLO|FLOAT|DEC|DECIMAL|REAL|STR|CAD|CADENA|TEXT|TEXTO|BOOL|BOOLEAN|BOOLEANO)\\b"
+        },
+        {
+          "name": "support.function.tiger",
+          "match": "\\b(IMPRIMIR|PRINT|ESCRIBIR|WRITE|MOSTRAR|SHOW|ECO|ECHO|LEER|READ|GUARDAR|SAVE|INYECTAR|INJECT|ENTRADA|INPUT)\\b"
+        },
+        {
+          "name": "constant.language.boolean.tiger",
+          "match": "\\b(TRUE|FALSE|VERDADERO|FALSO|CIERTO)\\b"
+        },
+        {
+          "name": "keyword.other.tiger",
+          "match": "\\b(IA|AI|ASISTENTE|ASSISTANT|API|ERROR|TRY|REGISTRO|REG|KERNEL|SYSCALL)\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.tiger",
+          "match": "\\b0[xX][0-9A-Fa-f]+\\b"
+        },
+        {
+          "name": "constant.numeric.decimal.tiger",
+          "match": "\\b[0-9]+\\.[0-9]+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.tiger",
+          "match": "\\b[0-9]+\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.injection.tiger",
+          "match": "->|<-|\\+=|-=|\\*="
+        },
+        {
+          "name": "keyword.operator.comparison.tiger",
+          "match": "===|==|!=|<=|>=|<|>"
+        },
+        {
+          "name": "keyword.operator.assignment.tiger",
+          "match": "="
+        },
+        {
+          "name": "keyword.operator.arithmetic.tiger",
+          "match": "[+*/%\\-]"
+        },
+        {
+          "name": "keyword.operator.logical.symbol.tiger",
+          "match": "&&|\\|\\||!"
+        },
+        {
+          "name": "keyword.operator.pointer.tiger",
+          "match": "@"
+        }
+      ]
+    },
+    "files": {
+      "patterns": [
+        {
+          "name": "string.other.filepath.tiger",
+          "match": "(?i)(?:[A-Za-z0-9_-]+[\\\\/])*[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]+)*\\.(tg|tgi|py|wasm|so|dll|a|lib|bin|png)\\b"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "invalid.illegal.terminator.tiger",
+          "match": ";"
+        },
+        {
+          "name": "punctuation.separator.subprocess.tiger",
+          "match": ","
+        },
+        {
+          "name": "punctuation.terminator.process.tiger",
+          "match": "\\.(?![0-9])"
+        },
+        {
+          "name": "punctuation.section.block.tiger",
+          "match": "[{}()\\[\\]]"
+        }
+      ]
+    }
+  }
+}

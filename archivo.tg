@@ -1,0 +1,10 @@
+IMPRIMIR "======================================================".
+IMPRIMIR "  [TIGER] ARCHIVO DE PRUEBA EJECUTADO CON TIGER.EXE".
+IMPRIMIR "======================================================".
+IMPRIMIR "¡Hola desde Tiger Language!".
+IMPRIMIR "Ejecutado al 100% de forma nativa con tiger.exe.".
+
+VARIABLE suma = 15 + 27.
+IMPRIMIR "Calculo instantaneo:".
+IMPRIMIR suma.
+

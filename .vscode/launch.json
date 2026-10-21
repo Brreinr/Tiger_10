@@ -1,0 +1,82 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Tiger: Ejecutar archivo actual (Intérprete)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "C:/Users/User/OneDrive/Documentos/Tiger/tools/tiger_compiler.py",
+      "args": [
+        "${file}",
+        "--run",
+        "--fix"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${fileDirname}"
+    },
+    {
+      "name": "Tiger: Ejecutar binario nativo (Windows x64)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "C:/Users/User/OneDrive/Documentos/Tiger/tools/tiger_compiler.py",
+      "args": [
+        "${file}",
+        "--run-native",
+        "--fix"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${fileDirname}"
+    },
+    {
+      "name": "Tiger: Compilar a Ensamblador (.asm)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "C:/Users/User/OneDrive/Documentos/Tiger/tools/tiger_compiler.py",
+      "args": [
+        "${file}",
+        "--target",
+        "asm",
+        "--fix",
+        "-o",
+        "${fileDirname}/${fileBasenameNoExtension}.asm"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${fileDirname}"
+    },
+    {
+      "name": "Tiger: Compilar a WebAssembly (.wat)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "C:/Users/User/OneDrive/Documentos/Tiger/tools/tiger_compiler.py",
+      "args": [
+        "${file}",
+        "--target",
+        "wat",
+        "--fix",
+        "-o",
+        "${fileDirname}/${fileBasenameNoExtension}.wat"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${fileDirname}"
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "c:/Users/User/OneDrive/Documentos/Tiger",
+      "program": "c:/Users/User/OneDrive/Documentos/Tiger/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

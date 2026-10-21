@@ -1,0 +1,54 @@
+{
+  "comments": {
+    "lineComment": "#"
+  },
+  "brackets": [
+    ["{", "}"],
+    ["(", ")"],
+    ["[", "]"]
+  ],
+  "autoClosingPairs": [
+    { "open": "{", "close": "}" },
+    { "open": "(", "close": ")" },
+    { "open": "[", "close": "]" },
+    { "open": "\"", "close": "\"", "notIn": ["string"] }
+  ],
+  "surroundingPairs": [
+    ["{", "}"],
+    ["(", ")"],
+    ["[", "]"],
+    ["\"", "\""]
+  ],
+  "wordPattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\@\\#\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s]+)",
+  "indentationRules": {
+    "increaseIndentPattern": "^.*(\\{|\\[|\\(|:\\s*|->\\s*)$",
+    "decreaseIndentPattern": "^\\s*(\\}|\\]|\\)).*$"
+  },
+  "onEnterRules": [
+    {
+      "beforeText": "^.*\\{\\s*$",
+      "afterText": "^\\s*\\}",
+      "action": {
+        "indentAction": "indentOutdent"
+      }
+    },
+    {
+      "beforeText": "^.*\\{\\s*$",
+      "action": {
+        "indentAction": "indent"
+      }
+    },
+    {
+      "beforeText": "^.*\\b(CLASE|CLASS|FN|FUNCTION|COMANDO|CMD|SI|IF|SINO|ELSE|CICLO|LOOP|BUCLE|TIPO|TYPE)\\b.*$",
+      "action": {
+        "indentAction": "indent"
+      }
+    },
+    {
+      "beforeText": "^.*,\\s*$",
+      "action": {
+        "indentAction": "none"
+      }
+    }
+  ]
+}
