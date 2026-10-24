@@ -1,91 +1,115 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Tiger: ejecutar con intérprete (experimental)",
-      "type": "process",
-      "command": "${workspaceFolder}\\bin\\tiger.exe",
-      "args": [
-        "${file}",
-        "--run",
-        "--fix"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "group": {
-        "kind": "test",
-        "isDefault": true
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Tiger: ejecutar binario nativo Windows x64",
-      "type": "process",
-      "command": "${workspaceFolder}\\bin\\tiger.exe",
-      "args": [
-        "${file}",
-        "--run-native",
-        "--fix"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Tiger: compilar ASM (.asm)",
-      "type": "process",
-      "command": "${workspaceFolder}\\bin\\tiger.exe",
-      "args": [
-        "${file}",
-        "--target",
-        "asm",
-        "--fix",
-        "-o",
-        "${fileDirname}\\${fileBasenameNoExtension}.asm"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Tiger: compilar WebAssembly (.wat)",
-      "type": "process",
-      "command": "${workspaceFolder}\\bin\\tiger.exe",
-      "args": [
-        "${file}",
-        "--target",
-        "wat",
-        "--fix",
-        "-o",
-        "${fileDirname}\\${fileBasenameNoExtension}.wat"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "problemMatcher": []
-    }
-  ]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Tiger: ejecutar con intérprete (experimental)",
+            "type": "process",
+            "command": "${workspaceFolder}\\bin\\tiger.exe",
+            "args": [
+                "${file}",
+                "--run",
+                "--fix"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Tiger: ejecutar binario nativo Windows x64",
+            "type": "process",
+            "command": "${workspaceFolder}\\bin\\tiger.exe",
+            "args": [
+                "${file}",
+                "--run-native",
+                "--fix"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Tiger: compilar ASM (.asm)",
+            "type": "process",
+            "command": "${workspaceFolder}\\bin\\tiger.exe",
+            "args": [
+                "${file}",
+                "--target",
+                "asm",
+                "--fix",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.asm"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Tiger: compilar WebAssembly (.wat)",
+            "type": "process",
+            "command": "${workspaceFolder}\\bin\\tiger.exe",
+            "args": [
+                "${file}",
+                "--target",
+                "wat",
+                "--fix",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.wat"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: clang.exe compilar archivo activo",
+            "command": "C:\\Program Files\\LLVM\\bin\\clang.exe",
+            "args": [
+                "-fcolor-diagnostics",
+                "-fansi-escape-codes",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Tarea generada por el depurador."
+        }
+    ]
 }
