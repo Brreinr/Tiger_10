@@ -1,55 +1,41 @@
-import sys
-import json
-import time
-from pathlib import Path
-import tiger_compiler
+# -*- coding: utf-8 -*-
+import sys, json
 
-def run_server():
-    sys.stdout.write("READY\n")
-    sys.stdout.flush()
+class _TigerBridge(dict):
+    def __getattr__(self, k): return self.get(k)
+    def __setattr__(self, k, v): self[k] = v
+    def __getitem__(self, k): return self.get(k)
+    def __setitem__(self, k, v): super().__setitem__(k, v)
 
-    while True:
-        try:
-            line = sys.stdin.readline()
-            if not line:
+_globals = {
+    'TIGER': _TigerBridge({}),
+    '_json': json,
+    'print': print
+}
+_globals['TIGER'].imprimir = print
+_globals['TIGER'].print = print
+
+sys.stdout.write("__TIGER_READY__\n")
+sys.stdout.flush()
+
+while True:
+    header = sys.stdin.readline()
+    if not header:
+        break
+    if "__TIGER_REQ_START__" in header:
+        lines = []
+        while True:
+            l = sys.stdin.readline()
+            if not l or "__TIGER_REQ_END__" in l:
                 break
-            line = line.strip()
-            if not line:
-                continue
-
-            req = json.loads(line)
-            file_path = req.get("file", "")
-
-            t0 = time.perf_counter_ns()
-
-            p = Path(file_path).resolve()
-            if not p.is_file():
-                resp = {"status": "error", "error": f"Archivo no encontrado: {file_path}", "time_ms": 0}
-            else:
-                try:
-                    # Ejecutar en memoria directamente
-                    res = tiger_compiler.run_file(p, stream_output=False)
-                    elapsed = (time.perf_counter_ns() - t0) / 1_000_000
-                    resp = {
-                        "status": "ok",
-                        "output": res,
-                        "time_ms": round(elapsed, 3)
-                    }
-                except Exception as err:
-                    elapsed = (time.perf_counter_ns() - t0) / 1_000_000
-                    resp = {
-                        "status": "error",
-                        "error": str(err),
-                        "output": "",
-                        "time_ms": round(elapsed, 3)
-                    }
-
-            sys.stdout.write(json.dumps(resp) + "\n")
-            sys.stdout.flush()
-        except Exception as global_err:
-            sys.stdout.write(json.dumps({"status": "error", "error": str(global_err)}) + "\n")
-            sys.stdout.flush()
-
-if __name__ == "__main__":
-    run_server()
+            lines.append(l)
+        script = "".join(lines)
+        _globals['TIGER'].clear()
+        try:
+            exec(script, _globals)
+        except Exception as e:
+            sys.stderr.write(f"Err: {e}\n")
+            sys.stderr.flush()
+        sys.stdout.write("__TIGER_BATCH_DONE__\n")
+        sys.stdout.flush()
 

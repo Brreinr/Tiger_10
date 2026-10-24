@@ -6617,18 +6617,21 @@ def _parse_dynamic_input(raw_value: str) -> int | float | str:
 
 
 def _sync_external_libraries(base_dir: Path | None = None) -> None:
-    """Lee libraries_ext.json e instala automáticamente dependencias de Python y headers de C/C++."""
+    """Lee lib_ext.json o libraries_ext.json e instala automáticamente dependencias de Python y headers de C/C++."""
     import json as _json, urllib.request, subprocess, importlib.util, shutil
 
     cand_paths = []
-    if base_dir:
-        cand_paths.append(base_dir / "libraries_ext.json")
-        cand_paths.append(base_dir / "tools" / "libraries_ext.json")
-    cand_paths.append(Path.cwd() / "libraries_ext.json")
-    cand_paths.append(Path.cwd() / "tools" / "libraries_ext.json")
-    cand_paths.append(Path(__file__).parent / "libraries_ext.json")
-    cand_paths.append(Path(__file__).parent / "tools" / "libraries_ext.json")
-    cand_paths.append(Path(__file__).parent.parent / "tools" / "libraries_ext.json")
+    names = ["lib_ext.json", "libraries_ext.json"]
+    for name in names:
+        if base_dir:
+            cand_paths.append(base_dir / name)
+            cand_paths.append(base_dir / "tools" / name)
+        cand_paths.append(Path.cwd() / name)
+        cand_paths.append(Path.cwd() / "tools" / name)
+        cand_paths.append(Path(__file__).parent / name)
+        cand_paths.append(Path(__file__).parent / "tools" / name)
+        cand_paths.append(Path(__file__).parent.parent / "tools" / name)
+        cand_paths.append(Path(__file__).parent.parent / name)
 
     config_path = next((p for p in cand_paths if p.is_file()), None)
     if not config_path:
@@ -6646,9 +6649,9 @@ def _sync_external_libraries(base_dir: Path | None = None) -> None:
             mod_to_check = "PIL" if pkg_name.lower() == "pillow" else pkg_name.replace("-", "_")
             if importlib.util.find_spec(mod_to_check) is None:
                 try:
-                    # Instalar silenciosamente la librería
                     pip_spec = pkg_name if ver in {"latest", "latest_version", "*", ""} else f"{pkg_name}=={ver}"
-                    py_bin = shutil.which("python") or shutil.which("python3") or r"C:\Users\User\AppData\Local\Programs\Python\Python312\python.exe"
+                    py_bin = shutil.which("python") or shutil.which("python3")
+                    print(f"\033[38;2;0;243;255m[Tiger Sync]: Instalando dependencia Python '{pip_spec}'...\033[0m")
                     res = subprocess.run(
                         [py_bin, "-m", "pip", "install", pip_spec],
                         capture_output=True,
@@ -6661,14 +6664,18 @@ def _sync_external_libraries(base_dir: Path | None = None) -> None:
                         RESET = "\033[0m"
                         print(f"{RED}[Aviso Tiger / Tiger Warning]: No se pudo auto-instalar '{pkg_name}' de Python / Failed to auto-install '{pkg_name}' for Python.{RESET}", file=sys.stderr)
                         print(f"{YELLOW}Sugerencia / Tip: Para usar este bloque, ejecuta manualmente / To use this block, run manually: pip install {pkg_name}{RESET}\n", file=sys.stderr)
+                    else:
+                        print(f"\033[38;2;34;197;94m    [OK] Dependencia Python '{pkg_name}' instalada con éxito.\033[0m")
                 except Exception as err:
                     print(f"\033[38;2;255;45;85m[Error Tiger]: Fallo al buscar librería Python '{pkg_name}': {err}\033[0m", file=sys.stderr)
+            else:
+                print(f"\033[38;2;34;197;94m    [OK] Dependencia Python '{pkg_name}' ya disponible en el sistema.\033[0m")
 
     # 2. Dependencias de C / C++ (Headers y URLs)
     c_deps = data.get("C_CPP", {})
     if isinstance(c_deps, dict) and c_deps:
-        # Carpetas de include de TCC interno
         tcc_include_dirs = [
+            Path(__file__).parent.parent / "bin" / "tcc" / "include",
             Path(__file__).parent / "bin" / "tcc" / "include",
             Path.cwd() / "bin" / "tcc" / "include",
         ]
@@ -6681,15 +6688,31 @@ def _sync_external_libraries(base_dir: Path | None = None) -> None:
                     dest_file = target_dir / filename
                     if not dest_file.exists():
                         try:
+                            print(f"\033[38;2;0;243;255m[Tiger Sync]: Descargando cabecera C/C++ '{lib_name}' desde {lib_source}...\033[0m")
                             req = urllib.request.Request(lib_source, headers={"User-Agent": "Tiger/1.0"})
                             with urllib.request.urlopen(req, timeout=10) as resp:
                                 dest_file.write_bytes(resp.read())
+                            print(f"\033[38;2;34;197;94m    [OK] Cabecera '{filename}' guardada en bin/tcc/include/.\033[0m")
                         except Exception as err:
                             RED = "\033[38;2;255;45;85m"
                             YELLOW = "\033[38;2;255;230;0m"
                             RESET = "\033[0m"
                             print(f"{RED}[Aviso Tiger / Tiger Warning]: No se pudo descargar la cabecera C/C++ '{lib_name}' desde {lib_source} / Failed to download C/C++ header '{lib_name}' from {lib_source}.{RESET}", file=sys.stderr)
                             print(f"{YELLOW}Sugerencia / Tip: Verifica tu conexión a internet o coloca '{filename}' directamente en 'bin/tcc/include/' / Check your internet connection or place '{filename}' directly into 'bin/tcc/include/'.{RESET}\n", file=sys.stderr)
+                    else:
+                        print(f"\033[38;2;34;197;94m    [OK] Cabecera C/C++ '{filename}' ya disponible en bin/tcc/include/.\033[0m")
+                elif isinstance(lib_source, str) and lib_source:
+                    filename = Path(lib_source).name
+                    dest_file = target_dir / filename
+                    if not dest_file.exists():
+                        for cand in (Path.cwd() / lib_source, Path.cwd() / "src" / lib_source, Path.cwd() / "bin" / "tcc" / "include" / lib_source):
+                            if cand.is_file():
+                                shutil.copy2(cand, dest_file)
+                                print(f"\033[38;2;34;197;94m    [OK] Cabecera local '{filename}' vinculada a bin/tcc/include/.\033[0m")
+                                break
+                    else:
+                        print(f"\033[38;2;34;197;94m    [OK] Cabecera C/C++ '{filename}' verificada en bin/tcc/include/.\033[0m")
+
 
 
 def get_tiger_bin_install_dir() -> Path:

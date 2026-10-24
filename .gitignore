@@ -18,10 +18,13 @@ __pycache__/
 # Motores externos autodescargables con 'tiger setup'
 bin/node/
 bin/node/*
+bin/bin/
+bin/bin/*
 
 # Marcador local de primer arranque (para que cada nuevo usuario se auto-registre)
 .tiger_registered
 */.tiger_registered
+.tiger_asistente_cache.json
 
 # Archivos temporales del sistema
 Thumbs.db

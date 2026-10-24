@@ -1,0 +1,10 @@
+{
+  "PYTHON": {
+    "pillow": "latest"
+  },
+  "C_CPP": {
+    "minctest": "https://raw.githubusercontent.com/codeplea/minctest/master/minctest.h",
+    "tiger": "tiger.h",
+    "window": "window.h"
+  }
+}
