@@ -192,6 +192,33 @@ int main(int argc, char** argv) {
         return 0;
     }
 
+    /* Soporte Metalenguaje: Detección automática de archivos políglotas (.c, .py, .js) */
+    const char* ext = strrchr(filepath, '.');
+    if (ext) {
+        if (strcasecmp(ext, ".c") == 0) {
+            char cmd[1024];
+            const char* tcc_bin = (GetFileAttributesA("bin\\tcc\\tcc.exe") != INVALID_FILE_ATTRIBUTES) ? "bin\\tcc\\tcc.exe" : "tcc.exe";
+            if (output_path) {
+                snprintf(cmd, sizeof(cmd), "%s -Ibin/tcc/include \"%s\" -o \"%s\"", tcc_bin, filepath, output_path);
+            } else {
+                snprintf(cmd, sizeof(cmd), "%s -Ibin/tcc/include -run \"%s\"", tcc_bin, filepath);
+            }
+            int code = system(cmd);
+            return code;
+        } else if (strcasecmp(ext, ".py") == 0) {
+            char cmd[1024];
+            snprintf(cmd, sizeof(cmd), "python \"%s\"", filepath);
+            int code = system(cmd);
+            return code;
+        } else if (strcasecmp(ext, ".js") == 0) {
+            char cmd[1024];
+            const char* node_bin = (GetFileAttributesA("bin\\node\\node.exe") != INVALID_FILE_ATTRIBUTES) ? "bin\\node\\node.exe" : "node.exe";
+            snprintf(cmd, sizeof(cmd), "%s \"%s\"", node_bin, filepath);
+            int code = system(cmd);
+            return code;
+        }
+    }
+
     /* Compilación nativa al Silicio (Windows .exe, Mac, Linux, Android, iOS, WASM) */
     if (is_compile) {
         return tiger_compile_to_binary(filepath, output_path, target, domain, run_native) ? 0 : 1;

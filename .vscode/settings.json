@@ -116,16 +116,23 @@
   },
   "code-runner.executorMapByFileExtension": {
     ".tg": "& \"$workspaceRoot\\bin\\tiger.exe\" \"$fullFileName\" --run --fix",
-    ".tgi": "& \"$workspaceRoot\\bin\\tiger.exe\" \"$fullFileName\" --run --fix"
+    ".tgi": "& \"$workspaceRoot\\bin\\tiger.exe\" \"$fullFileName\" --run --fix",
+    ".c": "& \"$workspaceRoot\\bin\\tiger.exe\" \"$fullFileName\"",
+    ".cpp": "& \"$workspaceRoot\\bin\\tiger.exe\" \"$fullFileName\""
   },
   "code-runner.runInTerminal": true,
   "code-runner.saveFileBeforeRun": true,
   "workbench.iconTheme": "tiger-icons",
   "code-runner.executorMap": {
-    "tiger": "& \"$workspaceRoot\\bin\\tiger.exe\" \"$fullFileName\" --run --fix"
+    "tiger": "& \"$workspaceRoot\\bin\\tiger.exe\" \"$fullFileName\" --run --fix",
+    "c": "& \"$workspaceRoot\\bin\\tiger.exe\" \"$fullFileName\""
   },
-  "C_Cpp_Runner.cCompilerPath": "gcc",
-  "C_Cpp_Runner.cppCompilerPath": "g++",
+  "C_Cpp_Runner.cCompilerPath": "${workspaceFolder}/bin/tcc/tcc.exe",
+  "C_Cpp_Runner.cppCompilerPath": "${workspaceFolder}/bin/tcc/tcc.exe",
+  "C_Cpp_Runner.includePaths": [
+    "${workspaceFolder}/bin/tcc/include",
+    "${workspaceFolder}/bin/tcc/include/winapi"
+  ],
   "C_Cpp_Runner.debuggerPath": "gdb",
   "C_Cpp_Runner.cStandard": "",
   "C_Cpp_Runner.cppStandard": "",

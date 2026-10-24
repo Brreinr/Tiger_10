@@ -1,16 +1,24 @@
 {
   "configurations": [
     {
-      "name": "windows-clang-x64",
+      "name": "Tiger-TCC",
       "includePath": [
-        "${workspaceFolder}/**"
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/bin/tcc/include",
+        "${workspaceFolder}/bin/tcc/include/winapi",
+        "${workspaceFolder}/bin/tcc/include/sec_api",
+        "${workspaceFolder}/bin/tcc/include/sys",
+        "${workspaceFolder}/src"
       ],
-      "compilerPath": "C:/Program Files/LLVM/bin/clang.exe",
-      "cStandard": "c17",
+      "defines": [
+        "_WIN32",
+        "_WIN64",
+        "__TINYC__"
+      ],
+      "cStandard": "c11",
       "cppStandard": "c++17",
-      "intelliSenseMode": "windows-clang-x64"
+      "intelliSenseMode": "windows-gcc-x64"
     }
   ],
   "version": 4
 }
-
