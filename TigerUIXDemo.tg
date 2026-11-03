@@ -1,0 +1,144 @@
+# ==============================================================================
+# DEMO OFICIAL TIGERUIX: INTERFACES DECLARATIVAS MODERNAS Y FLUIDAS
+# ==============================================================================
+# Incorpora:
+# - Menus de navegacion horizontal/vertical con destinos enlazables
+# - Parrafos con antialiasing (ClearType) y control tipografico
+# - Estilos y colores de texto (Hex / nombres / negrita / cursiva / alineacion)
+# - Columnas adaptativas tipo Grid/Flexbox
+# - Posiciones relativas porcentuales (x_rel, y_rel, ancho_rel)
+# - Enlaces clickeables interactivos con cambio de cursor
+# - Contenedores multimedia para imagenes y videos enlazables a rutas de archivo
+# - Suavizado sin pixelacion mediante interpolacion bicubica de silicio
+# ==============================================================================
+
+USAR "tools/Libraries/TigerUIX.tg".
+
+VAR interfaz = {
+    ventana: {
+        nombre: "TigerUIX 1.0 - Modern Declarative Engine",
+        x: 120,
+        y: 80,
+        ancho: 500,
+        alto: 500,
+        fps: 60,
+        fondo: "#0B0F19",
+        titulo_x: 32,
+        titulo_y: 24,
+
+        pagina_1: {
+            x: 32,
+            y: 72,
+
+            # 1. MENU SUPERIOR CLICKABLE
+            menu: {
+                orientacion: "vertical",
+                espacio: 28,
+                ancho_item: 120,
+                alto_item: 30,
+                color: "#94A3B8",
+                items: [
+                    { texto: "Inicio", destino: "https://github.com", negrita: 1, color: "#38BDF8" },
+                    { texto: "Componentes", destino: "https://github.com", negrita: 0 },
+                    { texto: "Documentacion", destino: "https://github.com", negrita: 0 }
+                ]
+            },
+
+            # 2. ENCABEZADO CON ESTILOS AVANZADOS
+            texto: {
+                contenido: "🐯 TigerUIX: Interfaces de Nueva Generacion",
+                tamano: 26,
+                color: "#F8FAFC",
+                fuente: "Segoe UI",
+                peso: "negrita",
+                x: 32,
+                y: 114
+            },
+
+            # 3. PARRAFO MULTILINEA CON ANTIALIASING FLUIDO
+            parrafo: {
+                contenido: "Diseño declarativo de ultra-alto rendimiento en silicio. Renderizado vectorial con fuentes suavizadas ClearType, animaciones basadas en fisica, aceleracion de hardware GDI+ bicubica y gestion de memoria lineal cero-GC.",
+                tamano: 15,
+                color: "#94A3B8",
+                fuente: "Segoe UI",
+                alto: 46,
+                ancho: 800,
+                x: 32,
+                y: 156
+            },
+
+            # 4. ENLACE INTERACTIVO CLICKABLE
+            enlace: {
+                texto: "-> Explorar repositorio del proyecto en GitHub",
+                url: "https://github.com",
+                color: "#60A5FA",
+                tamano: 15,
+                x: 32,
+                y: 212
+            },
+
+            # 5. CONTENEDOR DE IMAGEN (ENLAZABLE A RUTA LOCAL)
+            imagen: {
+                ruta: "vscode-tiger/tiger-logo.png",
+                x: 580,
+                y: 270,
+                ancho: 240,
+                alto: 240,
+                ajuste: "contener"
+            },
+
+            # 6. COLUMNAS Y TARJETAS RELATIVAS
+            columnas: [
+                {
+                    ancho: 240,
+                    x: 32,
+                    y: 260,
+                    texto: { contenido: "[⚡ Rendimiento]", tamano: 18, color: "#F59E0B", peso: "negrita" },
+                    parrafo: "Tasa de refresco estable a 60/120 FPS sin bloqueos en el hilo principal ni pausas de recoleccion de basura."
+                },
+                {
+                    ancho: 240,
+                    x: 300,
+                    y: 260,
+                    texto: { contenido: "[🎨 Diseno Moderno]", tamano: 18, color: "#10B981", peso: "negrita" },
+                    parrafo: "Bordes redondeados, sombras profundas, glassmorphism y suavizado antialiasing sin pixelado."
+                }
+            ],
+
+            # 7. BOTON DE ACCION CON ANIMACION DE DESLIZAMIENTO
+            boton: {
+                forma: "redondo",
+                x: 32,
+                y: 450,
+                ancho: 230,
+                alto: 54,
+                radio: 27,
+                sombra: 10,
+                animacion: "deslizar",
+                duracion: 500,
+                desplazamiento: 40,
+                texto: "Ejecutar Accion UIX",
+                fondo: "#7C3AED"
+            }
+        }
+    }
+}.
+
+ENT VAR activa = uix_interfaz(interfaz).
+
+MIENTRAS activa {
+    SI uix_boton_presionado() {
+        IMPRIMIR "[TigerUIX Event]: Click en boton de accion registrado exitosamente.".
+    }.
+    SI uix_enlace_presionado() {
+        IMPRIMIR "[TigerUIX Event]: Enlace interactivo presionado por el usuario.".
+    }.
+    ENT VAR menu_item = uix_menu_seleccionado().
+    SI menu_item > 0 {
+        IMPRIMIR "[TigerUIX Event]: Opcion de menu seleccionada ID:", menu_item.
+    }.
+
+    activa <- uix_actualizar().
+}.
+
+uix_cerrar().

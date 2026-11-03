@@ -1,0 +1,161 @@
+﻿USAR EN ASM Y WAT.
+
+# ======================================================================
+# TECLADO: clases por tecla con codigos virtuales de Windows (VK).
+# Cada instancia puede consultarse en un bucle usando actualizar().
+# Los eventos de pulsacion y liberacion son transiciones entre cuadros.
+# ======================================================================
+
+Tecla {
+    CRE ENT codigo = 0,
+    CRE CAD nombre = "",
+    CRE ENT anterior = 0,
+    CRE ENT actual = 0,
+    CRE ENT habilitada = 1,
+
+    FN configurar(ENT vk | CAD etiqueta) {
+        codigo <- vk,
+        nombre <- etiqueta,
+        anterior <- 0,
+        actual <- 0,
+        RETORNAR codigo
+    },
+    FN actualizar() {
+        anterior <- actual,
+        actual <- tecla_presionada(codigo),
+        RETORNAR actual
+    },
+    FN presionada() { RETORNAR actual },
+    FN mantenida() { RETORNAR actual },
+    FN soltada() { RETORNAR anterior - actual },
+    FN evento() { RETORNAR actual - anterior },
+    FN habilitar() { habilitada <- 1, RETORNAR habilitada },
+    FN deshabilitar() { habilitada <- 0, actual <- 0, RETORNAR habilitada }
+}.
+
+# Letras A-Z (VK 65-90).
+TeclaA { CRE ENT codigo = 65, CRE CAD nombre = "A", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaB { CRE ENT codigo = 66, CRE CAD nombre = "B", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaC { CRE ENT codigo = 67, CRE CAD nombre = "C", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaD { CRE ENT codigo = 68, CRE CAD nombre = "D", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaE { CRE ENT codigo = 69, CRE CAD nombre = "E", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaF { CRE ENT codigo = 70, CRE CAD nombre = "F", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaG { CRE ENT codigo = 71, CRE CAD nombre = "G", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaH { CRE ENT codigo = 72, CRE CAD nombre = "H", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaI { CRE ENT codigo = 73, CRE CAD nombre = "I", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaJ { CRE ENT codigo = 74, CRE CAD nombre = "J", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaK { CRE ENT codigo = 75, CRE CAD nombre = "K", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaL { CRE ENT codigo = 76, CRE CAD nombre = "L", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaM { CRE ENT codigo = 77, CRE CAD nombre = "M", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaN { CRE ENT codigo = 78, CRE CAD nombre = "N", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaO { CRE ENT codigo = 79, CRE CAD nombre = "O", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaP { CRE ENT codigo = 80, CRE CAD nombre = "P", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaQ { CRE ENT codigo = 81, CRE CAD nombre = "Q", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaR { CRE ENT codigo = 82, CRE CAD nombre = "R", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaS { CRE ENT codigo = 83, CRE CAD nombre = "S", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaT { CRE ENT codigo = 84, CRE CAD nombre = "T", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaU { CRE ENT codigo = 85, CRE CAD nombre = "U", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaV { CRE ENT codigo = 86, CRE CAD nombre = "V", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaW { CRE ENT codigo = 87, CRE CAD nombre = "W", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaX { CRE ENT codigo = 88, CRE CAD nombre = "X", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaY { CRE ENT codigo = 89, CRE CAD nombre = "Y", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaZ { CRE ENT codigo = 90, CRE CAD nombre = "Z", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+
+# Numeros de la fila superior (VK 48-57).
+Tecla0 { CRE ENT codigo = 48, CRE CAD nombre = "0", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+Tecla1 { CRE ENT codigo = 49, CRE CAD nombre = "1", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+Tecla2 { CRE ENT codigo = 50, CRE CAD nombre = "2", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+Tecla3 { CRE ENT codigo = 51, CRE CAD nombre = "3", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+Tecla4 { CRE ENT codigo = 52, CRE CAD nombre = "4", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+Tecla5 { CRE ENT codigo = 53, CRE CAD nombre = "5", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+Tecla6 { CRE ENT codigo = 54, CRE CAD nombre = "6", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+Tecla7 { CRE ENT codigo = 55, CRE CAD nombre = "7", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+Tecla8 { CRE ENT codigo = 56, CRE CAD nombre = "8", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+Tecla9 { CRE ENT codigo = 57, CRE CAD nombre = "9", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+
+# Controles, navegacion, modificadoras y teclado numerico.
+TeclaEscape { CRE ENT codigo = 27, CRE CAD nombre = "ESC", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN salir() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaEnter { CRE ENT codigo = 13, CRE CAD nombre = "ENTER", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN confirmar() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaEspacio { CRE ENT codigo = 32, CRE CAD nombre = "ESPACIO", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN saltar() { RETORNAR tecla_presionada(codigo) }, FN disparar() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaTab { CRE ENT codigo = 9, CRE CAD nombre = "TAB", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN siguiente() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaBackspace { CRE ENT codigo = 8, CRE CAD nombre = "BACKSPACE", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN borrar() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaSuprimir { CRE ENT codigo = 46, CRE CAD nombre = "SUPR", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN borrar() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaShift { CRE ENT codigo = 16, CRE CAD nombre = "SHIFT", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN turbo() { RETORNAR tecla_presionada(codigo) }, FN correr() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaControl { CRE ENT codigo = 17, CRE CAD nombre = "CTRL", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN agacharse() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaAlt { CRE ENT codigo = 18, CRE CAD nombre = "ALT", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion_secundaria() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaMayusculas { CRE ENT codigo = 20, CRE CAD nombre = "CAPS LOCK", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN alternar_modo() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaArriba { CRE ENT codigo = 38, CRE CAD nombre = "FLECHA ARRIBA", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN mover_arriba() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaAbajo { CRE ENT codigo = 40, CRE CAD nombre = "FLECHA ABAJO", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN mover_abajo() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaIzquierda { CRE ENT codigo = 37, CRE CAD nombre = "FLECHA IZQUIERDA", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN mover_izquierda() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaDerecha { CRE ENT codigo = 39, CRE CAD nombre = "FLECHA DERECHA", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN mover_derecha() { RETORNAR tecla_presionada(codigo) }, FN movimiento() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaInicio { CRE ENT codigo = 36, CRE CAD nombre = "HOME", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN ir_inicio() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaFin { CRE ENT codigo = 35, CRE CAD nombre = "END", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN ir_fin() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaPaginaArriba { CRE ENT codigo = 33, CRE CAD nombre = "PAGE UP", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN subir_pagina() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaPaginaAbajo { CRE ENT codigo = 34, CRE CAD nombre = "PAGE DOWN", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN bajar_pagina() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaInsertar { CRE ENT codigo = 45, CRE CAD nombre = "INSERT", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN insertar() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaPausa { CRE ENT codigo = 19, CRE CAD nombre = "PAUSE", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN pausar() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaImprimirPantalla { CRE ENT codigo = 44, CRE CAD nombre = "PRINT SCREEN", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN captura() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaBloqueoDesplazamiento { CRE ENT codigo = 145, CRE CAD nombre = "SCROLL LOCK", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN alternar_modo() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaBloqueoNumerico { CRE ENT codigo = 144, CRE CAD nombre = "NUM LOCK", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN alternar_modo() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaWindows { CRE ENT codigo = 91, CRE CAD nombre = "WINDOWS", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN atajo() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+
+# Teclas de funcion F1-F12.
+TeclaF1 { CRE ENT codigo = 112, CRE CAD nombre = "F1", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaF2 { CRE ENT codigo = 113, CRE CAD nombre = "F2", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaF3 { CRE ENT codigo = 114, CRE CAD nombre = "F3", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaF4 { CRE ENT codigo = 115, CRE CAD nombre = "F4", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaF5 { CRE ENT codigo = 116, CRE CAD nombre = "F5", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaF6 { CRE ENT codigo = 117, CRE CAD nombre = "F6", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaF7 { CRE ENT codigo = 118, CRE CAD nombre = "F7", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaF8 { CRE ENT codigo = 119, CRE CAD nombre = "F8", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaF9 { CRE ENT codigo = 120, CRE CAD nombre = "F9", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaF10 { CRE ENT codigo = 121, CRE CAD nombre = "F10", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaF11 { CRE ENT codigo = 122, CRE CAD nombre = "F11", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaF12 { CRE ENT codigo = 123, CRE CAD nombre = "F12", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+
+# Numpad VK 96-105 y operadores principales.
+TeclaNumpad0 { CRE ENT codigo = 96, CRE CAD nombre = "NUMPAD 0", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpad1 { CRE ENT codigo = 97, CRE CAD nombre = "NUMPAD 1", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpad2 { CRE ENT codigo = 98, CRE CAD nombre = "NUMPAD 2", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpad3 { CRE ENT codigo = 99, CRE CAD nombre = "NUMPAD 3", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpad4 { CRE ENT codigo = 100, CRE CAD nombre = "NUMPAD 4", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpad5 { CRE ENT codigo = 101, CRE CAD nombre = "NUMPAD 5", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpad6 { CRE ENT codigo = 102, CRE CAD nombre = "NUMPAD 6", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpad7 { CRE ENT codigo = 103, CRE CAD nombre = "NUMPAD 7", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpad8 { CRE ENT codigo = 104, CRE CAD nombre = "NUMPAD 8", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpad9 { CRE ENT codigo = 105, CRE CAD nombre = "NUMPAD 9", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpadMultiplicar { CRE ENT codigo = 106, CRE CAD nombre = "NUMPAD *", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpadMas { CRE ENT codigo = 107, CRE CAD nombre = "NUMPAD +", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpadRestar { CRE ENT codigo = 109, CRE CAD nombre = "NUMPAD -", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpadDecimal { CRE ENT codigo = 110, CRE CAD nombre = "NUMPAD .", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+TeclaNumpadDividir { CRE ENT codigo = 111, CRE CAD nombre = "NUMPAD /", FN presionada() { RETORNAR tecla_presionada(codigo) }, FN accion() { RETORNAR tecla_presionada(codigo) }, FN evento() { RETORNAR tecla_presionada(codigo) } }.
+
+# Acceso directo: consultar cualquier VK sin crear una clase adicional.
+Teclado {
+    FN presionada(ENT codigo) { RETORNAR tecla_presionada(codigo) },
+    FN letra(ENT codigo_ascii) { RETORNAR tecla_presionada(codigo_ascii) },
+    FN flecha_arriba() { RETORNAR tecla_presionada(38) },
+    FN flecha_abajo() { RETORNAR tecla_presionada(40) },
+    FN flecha_izquierda() { RETORNAR tecla_presionada(37) },
+    FN flecha_derecha() { RETORNAR tecla_presionada(39) },
+    FN espacio() { RETORNAR tecla_presionada(32) },
+    FN escape() { RETORNAR tecla_presionada(27) },
+    FN modificador(ENT codigo) { RETORNAR tecla_presionada(codigo) }
+}.
+
+# Funciones publicas para usar el teclado sin depender de la sintaxis de metodos.
+FN tecla_juego(ENT codigo) { RETORNAR tecla_presionada(codigo) }.
+FN tecla_arriba() { RETORNAR tecla_presionada(38) }.
+FN tecla_abajo() { RETORNAR tecla_presionada(40) }.
+FN tecla_izquierda() { RETORNAR tecla_presionada(37) }.
+FN tecla_derecha() { RETORNAR tecla_presionada(39) }.
+FN tecla_espacio() { RETORNAR tecla_presionada(32) }.
+FN tecla_shift() { RETORNAR tecla_presionada(16) }.
+FN tecla_escape() { RETORNAR tecla_presionada(27) }.
+FN tecla_reiniciar() { RETORNAR tecla_presionada(82) }.
+FN tecla_w() { RETORNAR tecla_presionada(87) }.
+FN tecla_a() { RETORNAR tecla_presionada(65) }.
+FN tecla_s() { RETORNAR tecla_presionada(83) }.
+FN tecla_d() { RETORNAR tecla_presionada(68) }.
+FN tecla_g() { RETORNAR tecla_presionada(71) }.
+FN tecla_enter() { RETORNAR tecla_presionada(13) }.

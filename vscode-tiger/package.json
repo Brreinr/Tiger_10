@@ -1,8 +1,8 @@
 {
   "name": "tiger-language",
   "displayName": "Tiger Language Support",
-  "description": "Resaltado de sintaxis con colores, icono personalizado, sangría inteligente y snippets para el lenguaje Tiger (.tg).",
-  "version": "0.5.0",
+  "description": "Resaltado, diagnósticos de sintaxis y comandos para el lenguaje Tiger (.tg).",
+  "version": "0.6.0",
   "publisher": "tiger-lang",
   "icon": "icons/tiger-logo.png",
   "engines": {
@@ -72,10 +72,20 @@
         "command": "tiger.compileWat",
         "title": "Tiger: Compilar a WebAssembly (.wat)",
         "icon": "$(globe)"
+      },
+      {
+        "command": "tiger.check",
+        "title": "Tiger: Comprobar errores de sintaxis",
+        "icon": "$(check)"
       }
     ],
     "menus": {
       "editor/title/run": [
+        {
+          "command": "tiger.check",
+          "when": "resourceExtname == .tg || resourceExtname == .tgi",
+          "group": "navigation@0"
+        },
         {
           "command": "tiger.run",
           "when": "resourceExtname == .tg || resourceExtname == .tgi",
@@ -88,6 +98,11 @@
         }
       ],
       "editor/context": [
+        {
+          "command": "tiger.check",
+          "when": "resourceExtname == .tg || resourceExtname == .tgi",
+          "group": "1_tiger"
+        },
         {
           "command": "tiger.run",
           "when": "resourceExtname == .tg || resourceExtname == .tgi",

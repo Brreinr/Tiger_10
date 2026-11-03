@@ -491,7 +491,7 @@ extern "C" {
     __asm__ (
       "fldt    %1\n"
       "frndint   \n"
-      "fstt    %0\n" : "=m" (retval) : "m" (x));
+      "fstpt   %0\n" : "=m" (retval) : "m" (x));
     return retval;
   }
 

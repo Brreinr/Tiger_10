@@ -1,4 +1,4 @@
-# Python Virtual Environment (evita subir cientos de MBs innecesarios)
+# Python Virtual Environment
 .venv/
 venv/
 env/
@@ -9,11 +9,25 @@ __pycache__/
 *$py.class
 *.pyd
 
-# Archivos temporales de compilación
+# Tiger Incremental Cache
+.tiger_cache/
+*/.tiger_cache/
+
+# Archivos temporales y de depuración de compilación
 *.o
 *.obj
 *.tmp
 *.log
+*.pdb
+*.ilk
+*_win.c
+*.exe.manifest
+bin/*.lib
+bin/test_*
+
+# Carpetas de distribución generadas
+dist/
+plataformas/
 
 # Motores externos autodescargables con 'tiger setup'
 bin/node/
@@ -21,13 +35,14 @@ bin/node/*
 bin/bin/
 bin/bin/*
 
-# Marcador local de primer arranque (para que cada nuevo usuario se auto-registre)
+# Marcador local de primer arranque y caché de IA
 .tiger_registered
 */.tiger_registered
 .tiger_asistente_cache.json
+chats/
+*.ai_config.json
 
 # Archivos temporales del sistema
 Thumbs.db
 Desktop.ini
 .DS_Store
-

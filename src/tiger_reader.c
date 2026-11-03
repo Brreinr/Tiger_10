@@ -95,3 +95,54 @@ char* tiger_read_file_resilient(const char* filepath, size_t* out_size) {
     if (out_size) *out_size = read_bytes;
     return res;
 }
+
+#pragma pack(push, 1)
+typedef struct {
+    uint64_t payload_len;
+    uint64_t uncompressed_len;
+    uint32_t flags;
+    uint32_t reserved;
+    uint64_t magic;
+} TigerPackFooter;
+#pragma pack(pop)
+
+char* tiger_read_self_payload(const char* self_path, size_t* out_size) {
+    if (!self_path) return NULL;
+    FILE* f = fopen(self_path, "rb");
+    if (!f) return NULL;
+
+    if (fseek(f, -(long)sizeof(TigerPackFooter), SEEK_END) != 0) {
+        fclose(f);
+        return NULL;
+    }
+
+    TigerPackFooter footer;
+    if (fread(&footer, sizeof(TigerPackFooter), 1, f) != 1) {
+        fclose(f);
+        return NULL;
+    }
+
+    if (footer.magic != TIGER_PACK_MAGIC || footer.payload_len == 0 || footer.payload_len > 150 * 1024 * 1024) {
+        fclose(f);
+        return NULL;
+    }
+
+    long total_offset = (long)(sizeof(TigerPackFooter) + footer.payload_len);
+    if (fseek(f, -total_offset, SEEK_END) != 0) {
+        fclose(f);
+        return NULL;
+    }
+
+    char* buffer = (char*)malloc(footer.payload_len + 1);
+    if (!buffer) {
+        fclose(f);
+        return NULL;
+    }
+
+    size_t read_bytes = fread(buffer, 1, footer.payload_len, f);
+    fclose(f);
+    buffer[read_bytes] = '\0';
+
+    if (out_size) *out_size = read_bytes;
+    return buffer;
+}

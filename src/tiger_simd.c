@@ -14,31 +14,15 @@ static bool g_simd_initialized = false;
 static uint64_t g_bci_registers[TIGER_REG_COUNT] = {0};
 
 #ifdef _WIN32
-/* Detección de CPUID para AVX2 (Leaf 7, EBX bit 5) */
+/* Detección de CPUID para AVX2 (Leaf 7, EBX bit 5) sin VirtualAlloc */
 static void detect_avx2_hardware(void) {
-    /* Código máquina para llamar a CPUID(7, 0) y devolver EBX */
-    uint8_t cpuid_code[] = {
-        0x53,                         /* push rbx */
-        0xB8, 0x07, 0x00, 0x00, 0x00, /* mov eax, 7 */
-        0x31, 0xC9,                   /* xor ecx, ecx */
-        0x0F, 0xA2,                   /* cpuid */
-        0x89, 0xD8,                   /* mov eax, ebx */
-        0x5B,                         /* pop rbx */
-        0xC3                          /* ret */
-    };
-
-    uint8_t* mem = (uint8_t*)VirtualAlloc(NULL, sizeof(cpuid_code), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-    if (mem) {
-        memcpy(mem, cpuid_code, sizeof(cpuid_code));
-        FlushInstructionCache(GetCurrentProcess(), mem, sizeof(cpuid_code));
-        typedef uint32_t (*CpuidFunc)(void);
-        CpuidFunc fn = (CpuidFunc)mem;
-        uint32_t ebx = fn();
-        VirtualFree(mem, 0, MEM_RELEASE);
-        g_avx2_supported = (ebx & (1 << 5)) != 0;
-    } else {
-        g_avx2_supported = true; /* Asumir soporte en arquitectura moderna x86_64 */
-    }
+#if defined(__GNUC__) || defined(__clang__)
+    uint32_t a = 0, b = 0, c = 0, d = 0;
+    __asm__ __volatile__("cpuid" : "=a"(a), "=b"(b), "=c"(c), "=d"(d) : "a"(7), "c"(0));
+    g_avx2_supported = (b & (1 << 5)) != 0;
+#else
+    g_avx2_supported = true;
+#endif
 }
 #else
 static void detect_avx2_hardware(void) {

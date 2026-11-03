@@ -1,31 +1,31 @@
 # Tiger Language Support for VS Code
 
-Esta extensión registra el lenguaje Tiger (`.tg`) y añade resaltado de sintaxis,
-comentarios con `#`, emparejamiento automático de llaves/paréntesis y comillas.
-Reconoce keywords en español e inglés, cadenas, números, operadores, rutas de
-archivo, funciones y declaraciones de macro.
+Soporte oficial para el lenguaje de programación **Tiger 10.2** (`.tg` y `.tgi`) en Visual Studio Code.
 
-## Instalar
+## ✨ Características
 
-Empaqueta esta carpeta como VSIX e instálala en VS Code. Desde la raíz del
-proyecto Tiger, si tienes `vsce` instalado:
+* **Resaltado de Sintaxis Completo:** Palabras clave bilingües (Español / Inglés), literales numéricos, flotantes, cadenas interpoladas, rutas de archivos y operadores de silicio.
+* **Comentarios con `#`:** Detección de comentarios de una línea sin conflictos sintácticos.
+* **Comprobación de Sintaxis en Tiempo Real:** Validación no intrusiva usando el parser nativo de Tiger en modo flexible (`tiger --check --fix`), reflejando errores directamente en el panel **Problemas**.
+* **Emparejamiento Inteligente:** Cierre automático de llaves `{ }`, corchetes `[ ]`, paréntesis `( )` y comillas `" "`.
+* **Snippets de Código:** Atajos rápidos para funciones (`fn`), clases/moldes (`clase`), condicionales (`si`), bucles (`ciclo`), y punteros directos (`ptr`).
+* **Iconos y Tema Tiger Neon:** Tema de iconos temáticos y colores optimizados para alto contraste en desarrollo de silicio.
+
+## 🚀 Comandos Integrados
+
+* `Tiger: Ejecutar archivo (.tg)` (`tiger.run`): Ejecuta el script inmediatamente en la terminal interactiva Tiger.
+* `Tiger: Ejecutar binario nativo (Windows x64)` (`tiger.runNative`): Compila y corre el binario optimizado en C / LLVM.
+* `Tiger: Compilar a Ensamblador (.asm)` (`tiger.compileAsm`): Emite código ensamblador nativo x86_64.
+* `Tiger: Compilar a WebAssembly (.wat)` (`tiger.compileWat`): Genera representación WebAssembly en texto.
+* `Tiger: Comprobar errores de sintaxis` (`tiger.check`): Diagnósticos de sintaxis bajo demanda.
+
+## 📦 Instalación
+
+Empaqueta esta carpeta como VSIX e instálala en VS Code:
 
 ```powershell
 Push-Location .\vscode-tiger
 vsce package
 Pop-Location
-code --install-extension .\tiger-language-0.1.0.vsix
+code --install-extension .\vscode-tiger\tiger-language-0.6.0.vsix
 ```
-
-En el workspace Tiger la asociación `.tg` está configurada en `.vscode/settings.json`.
-Para ejecutar el archivo abierto, usa **Terminal → Run Task → Tiger: ejecutar
-archivo .tg**.
-
-Esta primera versión proporciona edición y resaltado; todavía no incluye
-diagnósticos en vivo, autocompletado ni depurador.
-
-En el workspace Tiger, el botón **Run Code** compila a un ejecutable Windows x64
-temporal, lo ejecuta y muestra la salida del programa. La ejecución nativa
-requiere LLVM en `PATH` (`clang`, `lld-link` y `llvm-dlltool`). Para guardar
-los dos formatos de código fuente junto al archivo abierto, usa las tareas
-**Tiger: compilar ASM (.asm)** y **Tiger: compilar WebAssembly (.wat)**.

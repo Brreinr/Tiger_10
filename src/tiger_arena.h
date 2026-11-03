@@ -44,4 +44,29 @@ void tiger_arena_free(TigerArena* arena);
 /* Arena global por defecto del motor Tiger */
 TigerArena* tiger_arena_global(void);
 
+/* Retorna la cantidad de bytes asignados en la arena global */
+size_t tiger_arena_get_allocated(void);
+
+/* ========================================================================= */
+/* RECOLECTOR DE BASURA CON TEMPORIZADOR EN SEGUNDO PLANO (TIMED GC)         */
+/* ========================================================================= */
+typedef struct {
+    uint64_t total_collections;
+    uint64_t total_bytes_reclaimed;
+    uint32_t interval_ms;
+    bool is_running;
+} TigerGCStats;
+
+/* Inicia el recolector de basura en segundo plano con intervalo en ms (ej: 500, 1000) */
+void tiger_gc_start(uint32_t interval_ms);
+
+/* Detiene el recolector de basura en segundo plano */
+void tiger_gc_stop(void);
+
+/* Ejecuta una pasada de recolección de memoria inmediata (compactación y trim) */
+size_t tiger_gc_collect(void);
+
+/* Consulta estadísticas del recolector de basura */
+TigerGCStats tiger_gc_get_stats(void);
+
 #endif /* TIGER_ARENA_H */

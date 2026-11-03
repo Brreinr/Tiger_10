@@ -48,6 +48,15 @@ static void consume(TigerParser* p, TigerTokenType type, const char* message) {
     p->panic_mode = true;
 }
 
+static inline bool is_stmt_keyword(TigerTokenType t) {
+    return t == TOK_VAR || t == TOK_CONST || t == TOK_IMPRIMIR || t == TOK_ENTRADA ||
+           t == TOK_SI || t == TOK_SINO || t == TOK_MIENTRAS || t == TOK_CICLO ||
+           t == TOK_RETORNAR || t == TOK_ROMPER || t == TOK_CONTINUAR || t == TOK_FN ||
+           t == TOK_COMANDO || t == TOK_CLASE || t == TOK_MOLDE || t == TOK_TIPO ||
+           t == TOK_USAR || t == TOK_MACRO || t == TOK_CRE || t == TOK_DOT ||
+           t == TOK_RBRACE || t == TOK_EOF;
+}
+
 static bool consume_period_flexible(TigerParser* p) {
     if (match(p, TOK_COMMA)) return true; /* Subproceso terminado en coma ',' */
     if (match(p, TOK_DOT) || match(p, TOK_SEMICOLON)) return false; /* Proceso principal en punto '.' */
@@ -67,7 +76,28 @@ static bool consume_period_flexible(TigerParser* p) {
 static TigerExpr* parse_expression(TigerParser* p);
 static TigerExpr* parse_precedence(TigerParser* p, Precedence prec);
 
-static Precedence get_precedence(TigerTokenType type) {
+static bool is_member_hyphen(TigerParser* p) {
+    if (p->current.type != TOK_MINUS) return false;
+    size_t off = p->current.offset;
+    const char* src = p->lexer.source;
+    bool no_space_before = (off > 0 && !isspace((unsigned char)src[off - 1]));
+    bool no_space_after = (off + 1 < p->lexer.length && !isspace((unsigned char)src[off + 1]));
+
+    TigerLexer look = p->lexer;
+    TigerToken next1 = tiger_lexer_next_token(&look);
+    if (next1.type != TOK_IDENT) {
+        tiger_token_free(&next1);
+        return false;
+    }
+    TigerToken next2 = tiger_lexer_next_token(&look);
+    bool is_method = (next2.type == TOK_LPAREN);
+    tiger_token_free(&next2);
+    tiger_token_free(&next1);
+
+    return is_method || (no_space_before && no_space_after);
+}
+
+static Precedence get_precedence(TigerParser* p, TigerTokenType type) {
     switch (type) {
         case TOK_OR: return PREC_OR;
         case TOK_AND: return PREC_AND;
@@ -77,8 +107,11 @@ static Precedence get_precedence(TigerTokenType type) {
         case TOK_LE:
         case TOK_GT:
         case TOK_GE: return PREC_COMPARISON;
-        case TOK_PLUS:
-        case TOK_MINUS: return PREC_TERM;
+        case TOK_PLUS: return PREC_TERM;
+        case TOK_MINUS: {
+            if (p && is_member_hyphen(p)) return PREC_CALL;
+            return PREC_TERM;
+        }
         case TOK_STAR:
         case TOK_SLASH:
         case TOK_PERCENT: return PREC_FACTOR;
@@ -123,7 +156,7 @@ static TigerExpr* parse_primary(TigerParser* p) {
         return tiger_expr_input(prompt, line);
     }
 
-    if (match(p, TOK_IDENT)) {
+    if (match(p, TOK_IDENT) || match(p, TOK_AND) || match(p, TOK_OR) || match(p, TOK_INI) || match(p, TOK_FIN)) {
         char* name = strdup(p->previous.text);
 
         /* Si es una llamada a función: identificador(...) */
@@ -232,6 +265,31 @@ static TigerExpr* parse_primary(TigerParser* p) {
         return dict_expr;
     }
 
+    /* Invocación de BCI / INTERFAZ como expresión: INTERFAZ(...) o BCI(...) */
+    if (match(p, TOK_BCI)) {
+        char* name = strdup("interfaz");
+        if (match(p, TOK_LPAREN)) {
+            TigerExpr* callee = tiger_expr_var(name, line);
+            free(name);
+            size_t cap = 4, argc = 0;
+            TigerExpr** args = (TigerExpr**)malloc(cap * sizeof(TigerExpr*));
+            if (!check(p, TOK_RPAREN)) {
+                do {
+                    if (argc >= cap) {
+                        cap *= 2;
+                        args = (TigerExpr**)realloc(args, cap * sizeof(TigerExpr*));
+                    }
+                    args[argc++] = parse_expression(p);
+                } while (match(p, TOK_PIPE) || match(p, TOK_COMMA));
+            }
+            consume(p, TOK_RPAREN, "Se esperaba ')' tras INTERFAZ(...)");
+            return tiger_expr_call(callee, args, argc, line);
+        }
+        TigerExpr* var_expr = tiger_expr_var(name, line);
+        free(name);
+        return var_expr;
+    }
+
     /* Invocación de Asistente IA como expresión: ASISTENTE("api" | "model" | "prompt") */
     if (match(p, TOK_ASISTENTE)) {
         char* name = strdup("ASISTENTE");
@@ -267,7 +325,7 @@ static TigerExpr* parse_primary(TigerParser* p) {
 static TigerExpr* parse_precedence(TigerParser* p, Precedence prec) {
     TigerExpr* left = parse_primary(p);
 
-    while (prec <= get_precedence(p->current.type)) {
+    while (prec <= get_precedence(p, p->current.type)) {
         if (p->current.type == TOK_DOT) {
             TigerLexer lookahead = p->lexer;
             TigerToken next_t = tiger_lexer_next_token(&lookahead);
@@ -277,11 +335,21 @@ static TigerExpr* parse_precedence(TigerParser* p, Precedence prec) {
             if (!is_member) break; /* Es terminador '.' de fin de sentencia, no acceso a miembro */
         }
 
+        bool was_member_hyphen = (p->current.type == TOK_MINUS && is_member_hyphen(p));
         TigerTokenType op = p->current.type;
         advance_p(p);
 
         /* Acceso a miembros con '.' o llamada a métodos */
         if (op == TOK_DOT && check(p, TOK_IDENT)) {
+            advance_p(p);
+            char* member = strdup(p->previous.text);
+            left = tiger_expr_member(left, member, p->previous.line);
+            free(member);
+            continue;
+        }
+
+        /* Acceso a miembros y métodos nativos con '-' (Sintaxis Estándar Tiger: objeto-metodo(...) y objeto-campo) */
+        if (was_member_hyphen && check(p, TOK_IDENT)) {
             advance_p(p);
             char* member = strdup(p->previous.text);
             left = tiger_expr_member(left, member, p->previous.line);
@@ -316,7 +384,7 @@ static TigerExpr* parse_precedence(TigerParser* p, Precedence prec) {
         }
 
         /* Operador binario estándar */
-        Precedence next_prec = (Precedence)(get_precedence(op) + 1);
+        Precedence next_prec = (Precedence)(get_precedence(p, op) + 1);
         TigerExpr* right = parse_precedence(p, next_prec);
         left = tiger_expr_binary(op, left, right, p->previous.line);
     }
@@ -439,9 +507,22 @@ static TigerStmt* parse_statement(TigerParser* p) {
         return s;
     }
 
-    /* 2. IMPRIMIR / PRINT */
+    /* 2. IMPRIMIR / PRINT (admite multiples argumentos: IMPRIMIR "Total:", total.) */
     if (match(p, TOK_IMPRIMIR)) {
         TigerExpr* expr = parse_expression(p);
+        while (check(p, TOK_PIPE) || (check(p, TOK_COMMA) && !check(p, TOK_EOF))) {
+            TigerLexer look = p->lexer;
+            TigerToken next_t = tiger_lexer_next_token(&look);
+            bool is_next_arg = !is_stmt_keyword(next_t.type);
+            tiger_token_free(&next_t);
+            if (!is_next_arg) break;
+
+            advance_p(p); /* Consumir ',' o '|' */
+            TigerExpr* next_expr = parse_expression(p);
+            TigerExpr* space = tiger_expr_literal(tiger_val_str(" "), line);
+            expr = tiger_expr_binary(TOK_PLUS, expr, space, line);
+            expr = tiger_expr_binary(TOK_PLUS, expr, next_expr, line);
+        }
         bool is_sub = consume_period_flexible(p);
         TigerStmt* s = tiger_stmt_print(expr, true, line);
         s->is_subprocess = is_sub;
@@ -504,13 +585,36 @@ static TigerStmt* parse_statement(TigerParser* p) {
         return tiger_stmt_if(cond, then_b, then_c, else_b, else_c, line);
     }
 
-    /* 4. MIENTRAS / WHILE / CICLO / LOOP / FOR / PARA */
+    /* 4. MIENTRAS / WHILE / CICLO / LOOP / FOR / PARA [PARALELO / EN PARALELO] */
     if (match(p, TOK_MIENTRAS) || match(p, TOK_CICLO)) {
+        bool is_par = false;
+        if (check(p, TOK_IDENT) && (strcasecmp(p->current.text, "PARALELO") == 0 || strcasecmp(p->current.text, "PARALLEL") == 0)) {
+            advance_p(p);
+            is_par = true;
+        } else if (check(p, TOK_IDENT) && (strcasecmp(p->current.text, "EN") == 0 || strcasecmp(p->current.text, "IN") == 0)) {
+            advance_p(p);
+            if (check(p, TOK_IDENT) && (strcasecmp(p->current.text, "PARALELO") == 0 || strcasecmp(p->current.text, "PARALLEL") == 0)) {
+                advance_p(p);
+                is_par = true;
+            }
+        }
         TigerExpr* cond = parse_expression(p);
+        if (check(p, TOK_IDENT) && (strcasecmp(p->current.text, "PARALELO") == 0 || strcasecmp(p->current.text, "PARALLEL") == 0)) {
+            advance_p(p);
+            is_par = true;
+        } else if (check(p, TOK_IDENT) && (strcasecmp(p->current.text, "EN") == 0 || strcasecmp(p->current.text, "IN") == 0)) {
+            advance_p(p);
+            if (check(p, TOK_IDENT) && (strcasecmp(p->current.text, "PARALELO") == 0 || strcasecmp(p->current.text, "PARALLEL") == 0)) {
+                advance_p(p);
+                is_par = true;
+            }
+        }
         size_t body_c = 0;
         TigerStmt** body = parse_block(p, &body_c);
         consume_period_flexible(p);
-        return tiger_stmt_while(cond, body, body_c, line);
+        TigerStmt* ws = tiger_stmt_while(cond, body, body_c, line);
+        ws->as.while_stmt.is_parallel = is_par;
+        return ws;
     }
 
     /* 5. RETORNAR / RETURN */
@@ -601,7 +705,11 @@ static TigerStmt* parse_statement(TigerParser* p) {
 
     /* 9. CLASES Y MOLDES: CLASE/MOLDE Nombre { ... } */
     if (match(p, TOK_CLASE) || match(p, TOK_MOLDE)) {
-        consume(p, TOK_IDENT, "Se esperaba el nombre de la clase o molde");
+        if (check(p, TOK_AND) || check(p, TOK_OR) || check(p, TOK_INI) || check(p, TOK_FIN)) {
+            advance_p(p);
+        } else {
+            consume(p, TOK_IDENT, "Se esperaba el nombre de la clase o molde");
+        }
         char* name = strdup(p->previous.text);
         consume(p, TOK_LBRACE, "Se esperaba '{' para iniciar definición");
 
@@ -640,7 +748,7 @@ static TigerStmt* parse_statement(TigerParser* p) {
                 fcount++;
                 continue;
             }
-            if (match(p, TOK_FN) || match(p, TOK_METODO) || match(p, TOK_COMANDO)) {
+            if (match(p, TOK_FN) || match(p, TOK_COMANDO)) {
                 consume(p, TOK_IDENT, "Nombre del método");
                 char* mname = strdup(p->previous.text);
                 consume(p, TOK_LPAREN, "Se esperaba '('");
@@ -701,12 +809,12 @@ static TigerStmt* parse_statement(TigerParser* p) {
     }
 
     /* 10. MOLDES E INSTANCIAS DE CLASES SIN PALABRA RESERVADA: Nombre { CRE ... } */
-    if (check(p, TOK_IDENT)) {
+    if (check(p, TOK_IDENT) || check(p, TOK_AND) || check(p, TOK_OR) || check(p, TOK_INI) || check(p, TOK_FIN)) {
         TigerLexer look = p->lexer;
         TigerToken tok2 = tiger_lexer_next_token(&look);
         if (tok2.type == TOK_LBRACE) {
             TigerToken tok3 = tiger_lexer_next_token(&look);
-            bool is_unreserved_class = (tok3.type == TOK_CRE || tok3.type == TOK_FN || tok3.type == TOK_METODO || tok3.type == TOK_COMANDO);
+            bool is_unreserved_class = (tok3.type == TOK_CRE || tok3.type == TOK_FN || tok3.type == TOK_COMANDO);
             tiger_token_free(&tok3);
             tiger_token_free(&tok2);
 
@@ -749,7 +857,7 @@ static TigerStmt* parse_statement(TigerParser* p) {
                         fcount++;
                         continue;
                     }
-                    if (match(p, TOK_FN) || match(p, TOK_METODO) || match(p, TOK_COMANDO)) {
+                    if (match(p, TOK_FN) || match(p, TOK_COMANDO)) {
                         consume(p, TOK_IDENT, "Nombre del método");
                         char* mname = strdup(p->previous.text);
                         consume(p, TOK_LPAREN, "Se esperaba '('");
@@ -894,12 +1002,73 @@ static TigerStmt* parse_statement(TigerParser* p) {
         if (check(p, TOK_IDENT) && (strcasecmp(p->current.text, "C") == 0 || strcasecmp(p->current.text, "CPP") == 0)) {
             advance_p(p);
             is_c = true;
-        } else if (check(p, TOK_IDENT) && strcasecmp(p->current.text, "EN") == 0) {
-            advance_p(p); /* Consumir 'EN' */
-            /* USAR EN ASM / WAT / C */
-            while (!check(p, TOK_DOT) && !check(p, TOK_SEMICOLON) && !check(p, TOK_EOF)) advance_p(p);
-            consume_period_flexible(p);
-            return NULL; /* Directiva de destino ya registrada */
+        } else if (check(p, TOK_IDENT) && (strcasecmp(p->current.text, "EN") == 0 ||
+                                           strcasecmp(p->current.text, "GPU") == 0 ||
+                                           strcasecmp(p->current.text, "CPU") == 0 ||
+                                           strcasecmp(p->current.text, "NPU") == 0 ||
+                                           strcasecmp(p->current.text, "MAS") == 0)) {
+            if (strcasecmp(p->current.text, "EN") == 0) {
+                advance_p(p); /* Consumir 'EN' */
+            }
+
+            int hw_tgt = 4; /* TIGER_HW_AUTO */
+            bool is_hw = false;
+
+            if (p->current.text) {
+                if (strcasecmp(p->current.text, "GPU") == 0) {
+                    hw_tgt = 1; /* TIGER_HW_GPU */
+                    advance_p(p);
+                    is_hw = true;
+                } else if (strcasecmp(p->current.text, "CPU") == 0) {
+                    hw_tgt = 0; /* TIGER_HW_CPU */
+                    advance_p(p);
+                    is_hw = true;
+                } else if (strcasecmp(p->current.text, "NPU") == 0) {
+                    hw_tgt = 2; /* TIGER_HW_NPU */
+                    advance_p(p);
+                    is_hw = true;
+                } else if (strcasecmp(p->current.text, "MAS") == 0 ||
+                           strcasecmp(p->current.text, "TODO") == 0 ||
+                           strcasecmp(p->current.text, "TODOS") == 0) {
+                    hw_tgt = 3; /* TIGER_HW_MAS: Procesado cooperativo en los 3 silicios */
+                    advance_p(p);
+                    is_hw = true;
+                    /* Consumir amigablemente frase extendida: "donde se procesara de los 3" */
+                    while (check(p, TOK_IDENT) || check(p, TOK_INT)) {
+                        const char* t = p->current.text;
+                        if (!t) break;
+                        if (strcasecmp(t, "DONDE") == 0 || strcasecmp(t, "SE") == 0 ||
+                            strcasecmp(t, "PROCESARA") == 0 || strcasecmp(t, "PROCESAR") == 0 ||
+                            strcasecmp(t, "DE") == 0 || strcasecmp(t, "LOS") == 0 ||
+                            strcasecmp(t, "3") == 0 || strcasecmp(t, "TRES") == 0) {
+                            advance_p(p);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if (strcasecmp(p->current.text, "AUTO") == 0) {
+                    hw_tgt = 4; /* TIGER_HW_AUTO */
+                    advance_p(p);
+                    is_hw = true;
+                }
+            }
+
+            if (is_hw) {
+                if (check(p, TOK_LBRACE)) {
+                    size_t body_c = 0;
+                    TigerStmt** body = parse_block(p, &body_c);
+                    consume_period_flexible(p);
+                    return tiger_stmt_hw_target(hw_tgt, body, body_c, line);
+                } else {
+                    consume_period_flexible(p);
+                    return tiger_stmt_hw_target(hw_tgt, NULL, 0, line);
+                }
+            } else {
+                /* USAR EN ASM / WAT / C */
+                while (!check(p, TOK_DOT) && !check(p, TOK_SEMICOLON) && !check(p, TOK_EOF)) advance_p(p);
+                consume_period_flexible(p);
+                return NULL; /* Directiva de destino ya registrada */
+            }
         }
 
         if (match(p, TOK_STRING) || match(p, TOK_IDENT)) {

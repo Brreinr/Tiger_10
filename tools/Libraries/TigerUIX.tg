@@ -1,0 +1,529 @@
+USAR EN ASM Y WAT.
+
+# ======================================================================
+# Ventanas graficas nativas Tiger: apertura de entornos 2D y 3D.
+# Los entornos se crean mediante primitivas nativas del runtime Tiger.
+# ======================================================================
+
+ENT VAR VENTANA_ANCHO_DEFECTO = 800.
+ENT VAR VENTANA_ALTO_DEFECTO = 600.
+ENT VAR VENTANA_FPS_DEFECTO = 60.
+
+# ----------------------------------------------------------------------
+# TigerUIX: fachada inicial de ventana inmediata y no bloqueante.
+# Esta API mantiene nombres estables y permite elegir "auto" o un backend.
+# uix_backend() informa que controlador esta activo; un destino sin controlador
+# devuelve "no-disponible" y uix_abrir devuelve 0.
+# ----------------------------------------------------------------------
+FN uix_abrir(CAD titulo | ENT ancho | ENT alto | ENT fps) {
+    RETORNAR uix_ventana_abrir(titulo | ancho | alto | fps)
+}.
+
+# Alias en inglés: uix_open con parámetros (title, width, height, fps)
+FN uix_open(CAD title | ENT width | ENT height | ENT fps) {
+    RETORNAR uix_abrir(title | width | height | fps)
+}.
+
+FN uix_abrir_en(CAD titulo | ENT ancho | ENT alto | ENT fps | ENT x | ENT y) {
+    RETORNAR uix_ventana_abrir_en(titulo | ancho | alto | fps | x | y)
+}.
+
+FN uix_open_at(CAD title | ENT width | ENT height | ENT fps | ENT x | ENT y) {
+    RETORNAR uix_abrir_en(title | width | height | fps | x | y)
+}.
+
+FN uix_abrir_plataforma(CAD titulo | ENT ancho | ENT alto | ENT fps | CAD plataforma) {
+    RETORNAR uix_ventana_abrir_plataforma(titulo | ancho | alto | fps | plataforma)
+}.
+
+FN uix_open_platform(CAD title | ENT width | ENT height | ENT fps | CAD platform) {
+    RETORNAR uix_abrir_plataforma(title | width | height | fps | platform)
+}.
+
+FN uix_actualizar() {
+    RETORNAR uix_ventana_actualizar()
+}.
+
+FN uix_update() {
+    RETORNAR uix_actualizar()
+}.
+
+FN uix_cerrar() {
+    RETORNAR uix_ventana_cerrar()
+}.
+
+FN uix_close() {
+    RETORNAR uix_cerrar()
+}.
+
+FN cerrar_uix() {
+    RETORNAR uix_cerrar()
+}.
+
+FN close_uix() {
+    RETORNAR uix_cerrar()
+}.
+
+FN uix_limpiar(ENT rojo | ENT verde | ENT azul) {
+    RETORNAR limpiar_2d(rojo | verde | azul)
+}.
+
+FN uix_clear(ENT red | ENT green | ENT blue) {
+    RETORNAR uix_limpiar(red | green | blue)
+}.
+
+FN uix_rectangulo(ENT x | ENT y | ENT ancho | ENT alto | ENT rojo | ENT verde | ENT azul) {
+    RETORNAR dibujar_rect_2d(x | y | ancho | alto | rojo | verde | azul)
+}.
+
+FN uix_rectangle(ENT x | ENT y | ENT width | ENT height | ENT red | ENT green | ENT blue) {
+    RETORNAR uix_rectangulo(x | y | width | height | red | green | blue)
+}.
+
+FN uix_texto(ENT x | ENT y | CAD texto | ENT tamano | ENT rojo | ENT verde | ENT azul) {
+    RETORNAR dibujar_texto_2d(x | y | texto | tamano | rojo | verde | azul)
+}.
+
+FN uix_text(ENT x | ENT y | CAD text | ENT size | ENT red | ENT green | ENT blue) {
+    RETORNAR uix_texto(x | y | text | size | red | green | blue)
+}.
+
+FN uix_boton_presionado() {
+    RETORNAR uix_estado_boton()
+}.
+
+FN uix_enlace_presionado() {
+    RETORNAR uix_estado_enlace()
+}.
+
+FN uix_menu_seleccionado() {
+    RETORNAR uix_estado_menu()
+}.
+
+# ----------------------------------------------------------------------
+# Parametro 'id' y vinculacion con codigo externo, Types, JSON y NoSQL
+# Permite acceder y manipular cualquier elemento de la interfaz por su id,
+# sincronizarlo con tipos/clases de backend, exportar/importar JSON
+# y almacenar documentos en bases NoSQL.
+# ----------------------------------------------------------------------
+
+FN uix_obtener(CAD id) {
+    RETORNAR uix_elemento(id)
+}.
+
+FN uix_get(CAD id) {
+    RETORNAR uix_obtener(id)
+}.
+
+FN uix_leer_valor(CAD id) {
+    RETORNAR uix_valor(id)
+}.
+
+FN uix_read_value(CAD id) {
+    RETORNAR uix_leer_valor(id)
+}.
+
+FN uix_escribir_valor(CAD id | CAD nuevo_valor) {
+    RETORNAR uix_establecer_valor(id | nuevo_valor)
+}.
+
+FN uix_write_value(CAD id | CAD new_value) {
+    RETORNAR uix_escribir_valor(id | new_value)
+}.
+
+FN uix_asignar_propiedad(CAD id | CAD propiedad | valor) {
+    RETORNAR uix_establecer(id | propiedad | valor)
+}.
+
+FN uix_set_property(CAD id | CAD prop | val) {
+    RETORNAR uix_asignar_propiedad(id | prop | val)
+}.
+
+FN uix_exportar_json(CAD id) {
+    RETORNAR uix_a_json(id)
+}.
+
+FN uix_export_json(CAD id) {
+    RETORNAR uix_exportar_json(id)
+}.
+
+FN uix_importar_json(CAD id | CAD json_str) {
+    RETORNAR uix_desde_json(id | json_str)
+}.
+
+FN uix_import_json(CAD id | CAD json_str) {
+    RETORNAR uix_importar_json(id | json_str)
+}.
+
+FN uix_exportar_todo_json() {
+    RETORNAR uix_todos_a_json()
+}.
+
+FN uix_export_all_json() {
+    RETORNAR uix_exportar_todo_json()
+}.
+
+FN uix_conectar_tipo(CAD id | objeto_tipo) {
+    RETORNAR uix_vincular_tipo(id | objeto_tipo)
+}.
+
+FN uix_connect_type(CAD id | type_obj) {
+    RETORNAR uix_conectar_tipo(id | type_obj)
+}.
+
+FN uix_guardar_nosql(CAD id | CAD coleccion) {
+    RETORNAR uix_nosql_guardar(id | coleccion)
+}.
+
+FN uix_save_nosql(CAD id | CAD collection) {
+    RETORNAR uix_guardar_nosql(id | collection)
+}.
+
+FN uix_cargar_nosql(CAD id | CAD coleccion) {
+    RETORNAR uix_nosql_cargar(id | coleccion)
+}.
+
+FN uix_load_nosql(CAD id | CAD collection) {
+    RETORNAR uix_cargar_nosql(id | collection)
+}.
+
+FN uix_lista_ids() {
+    RETORNAR uix_ids()
+}.
+
+FN uix_list_ids() {
+    RETORNAR uix_lista_ids()
+}.
+
+FN uix_abrir_predeterminada() {
+    RETORNAR uix_abrir("TigerUIX" | VENTANA_ANCHO_DEFECTO | VENTANA_ALTO_DEFECTO | VENTANA_FPS_DEFECTO)
+}.
+
+FN uix_open_default() {
+    RETORNAR uix_abrir_predeterminada()
+}.
+
+FN uix_backend() {
+    RETORNAR uix_backend_actual()
+}.
+
+FN uix_interfaz(definicion) {
+    RETORNAR uix_renderizar_interfaz(definicion)
+}.
+
+FN uix_interface(definition) {
+    RETORNAR uix_interfaz(definition)
+}.
+
+FN uix_ejecutar_interfaz(definicion) {
+    ENT VAR abierta = uix_interfaz(definicion).
+    MIENTRAS abierta {
+        abierta <- uix_actualizar().
+    }.
+    RETORNAR uix_cerrar()
+}.
+
+FN uix_run_interface(definition) {
+    RETORNAR uix_ejecutar_interfaz(definition)
+}.
+
+FN ejemplo_tigeruix() {
+    VAR interfaz = {
+        ventana: {
+            nombre: "Tiger Mobile", ancho: 420, alto: 780, fps: 60,
+            fondo: "#101522",
+            pagina_1: {
+                texto: "Hola", color: "blanco",
+                boton: { forma: "redondo", ancho: 190, alto: 56,
+                         texto: "Presiona", fondo: "#8B5CF6" }
+            }
+        }
+    }.
+    ENT VAR abierta = uix_interfaz(interfaz).
+    MIENTRAS abierta {
+        SI uix_boton_presionado() { IMPRIMIR "Boton presionado". }.
+        abierta <- uix_actualizar().
+    }.
+    RETORNAR uix_cerrar()
+}.
+
+FN example_tigeruix() {
+    VAR ui = {
+        window: {
+            name: "Tiger Mobile", width: 420, height: 780, fps: 60,
+            background: "#101522",
+            page_1: {
+                text: "Hello", color: "white",
+                button: { shape: "round", width: 190, height: 56,
+                          text: "Click Me", background: "#8B5CF6" }
+            }
+        }
+    }.
+    ENT VAR open = uix_interface(ui).
+    MIENTRAS open {
+        SI uix_boton_presionado() { IMPRIMIR "Button clicked". }.
+        open <- uix_update().
+    }.
+    RETORNAR uix_close()
+}.
+
+# API sencilla: abrir ventana y obtener el estado/resultado del runtime.
+FN ventana_abrir_2d(CAD titulo | ENT ancho | ENT alto | ENT fps) {
+    RETORNAR crear_entorno_2d(titulo | ancho | alto | fps)
+}.
+
+FN ventana_abrir_3d(CAD titulo | ENT ancho | ENT alto | ENT fps) {
+    RETORNAR crear_entorno_3d(titulo | ancho | alto | fps)
+}.
+
+# Alias con los nombres utilizados por los ejemplos de Tiger.
+FN ventana_3d_abrir(CAD titulo | ENT ancho | ENT alto | ENT fps) {
+    RETORNAR crear_entorno_3d(titulo | ancho | alto | fps)
+}.
+
+FN abrir_ventana_2d() {
+    RETORNAR crear_entorno_2d("Tiger - Ventana 2D" | VENTANA_ANCHO_DEFECTO | VENTANA_ALTO_DEFECTO | VENTANA_FPS_DEFECTO)
+}.
+
+FN abrir_ventana_3d() {
+    RETORNAR crear_entorno_3d("Tiger - Ventana 3D" | VENTANA_ANCHO_DEFECTO | VENTANA_ALTO_DEFECTO | VENTANA_FPS_DEFECTO)
+}.
+
+# Lienzo 2D por cuadros, usado por juegos que dibujan dentro de su bucle.
+FN abrir_lienzo_2d(CAD titulo | ENT ancho | ENT alto | ENT fps) {
+    RETORNAR ventana_2d_abrir(titulo | ancho | alto | fps)
+}.
+
+FN actualizar_lienzo_2d() {
+    RETORNAR ventana_2d_actualizar()
+}.
+
+# Configuracion reutilizable para proyectos que mantienen la ventana en estado.
+VentanaNativa {
+    CRE CAD titulo = "Tiger - Ventana Nativa",
+    CRE CAD title = "Tiger - Native Window",
+    CRE ENT ancho = 800,
+    CRE ENT width = 800,
+    CRE ENT alto = 600,
+    CRE ENT height = 600,
+    CRE ENT fps = 60,
+    CRE ENT modo = 2,
+    CRE ENT abierta = 0,
+
+    FN configurar(CAD nuevo_titulo | ENT nuevo_ancho | ENT nuevo_alto | ENT nuevo_fps) {
+        titulo <- nuevo_titulo,
+        title <- nuevo_titulo,
+        ancho <- nuevo_ancho,
+        width <- nuevo_ancho,
+        alto <- nuevo_alto,
+        height <- nuevo_alto,
+        fps <- nuevo_fps,
+        RETORNAR 1
+    },
+
+    FN configure(CAD new_title | ENT new_width | ENT new_height | ENT new_fps) {
+        RETORNAR configurar(new_title | new_width | new_height | new_fps)
+    },
+
+    FN abrir_2d() {
+        modo <- 2,
+        abierta <- crear_entorno_2d(titulo | ancho | alto | fps),
+        RETORNAR abierta
+    },
+
+    FN open_2d() {
+        RETORNAR abrir_2d()
+    },
+
+    FN abrir_uix() {
+        modo <- 2,
+        abierta <- uix_abrir(titulo | ancho | alto | fps),
+        RETORNAR abierta
+    },
+
+    FN open_uix() {
+        RETORNAR abrir_uix()
+    },
+
+    FN abrir_3d() {
+        modo <- 3,
+        abierta <- crear_entorno_3d(titulo | ancho | alto | fps),
+        RETORNAR abierta
+    },
+
+    FN open_3d() {
+        RETORNAR abrir_3d()
+    },
+
+    FN estado() { RETORNAR abierta },
+    FN get_state() { RETORNAR abierta },
+    FN tipo() { RETORNAR modo },
+    FN get_type() { RETORNAR modo },
+    FN cambiar_tamano(ENT nuevo_ancho | ENT nuevo_alto) {
+        ancho <- nuevo_ancho,
+        width <- nuevo_ancho,
+        alto <- nuevo_alto,
+        height <- nuevo_alto,
+        RETORNAR ancho
+    },
+    FN resize(ENT new_width | ENT new_height) {
+        RETORNAR cambiar_tamano(new_width | new_height)
+    },
+    FN ejecutar() {
+        abierta <- 1,
+        MIENTRAS abierta {
+            abierta <- uix_actualizar(),
+        },
+        RETORNAR uix_cerrar()
+    },
+    FN run() {
+        RETORNAR ejecutar()
+    }
+}.
+
+# Controlador de elementos UI por 'id'
+TigerUIXControl {
+    CRE CAD id = "",
+
+    FN vincular(CAD nuevo_id) {
+        id <- nuevo_id,
+        RETORNAR id
+    },
+    FN bind(CAD new_id) {
+        RETORNAR vincular(new_id)
+    },
+
+    FN elemento() {
+        RETORNAR uix_obtener(id)
+    },
+    FN get_element() {
+        RETORNAR elemento()
+    },
+
+    FN valor() {
+        RETORNAR uix_leer_valor(id)
+    },
+    FN get_value() {
+        RETORNAR valor()
+    },
+
+    FN establecer(CAD nuevo_valor) {
+        RETORNAR uix_escribir_valor(id | nuevo_valor)
+    },
+    FN set_value(CAD new_val) {
+        RETORNAR establecer(new_val)
+    },
+
+    FN propiedad(CAD prop | nuevo_valor) {
+        RETORNAR uix_asignar_propiedad(id | prop | nuevo_valor)
+    },
+    FN set_property(CAD prop | val) {
+        RETORNAR propiedad(prop | val)
+    },
+
+    FN a_json() {
+        RETORNAR uix_exportar_json(id)
+    },
+    FN to_json() {
+        RETORNAR a_json()
+    },
+
+    FN desde_json(CAD json_str) {
+        RETORNAR uix_importar_json(id | json_str)
+    },
+    FN from_json(CAD json_str) {
+        RETORNAR desde_json(json_str)
+    },
+
+    FN vincular_tipo(objeto_tipo) {
+        RETORNAR uix_conectar_tipo(id | objeto_tipo)
+    },
+    FN connect_type(obj_type) {
+        RETORNAR vincular_tipo(obj_type)
+    },
+
+    FN guardar_nosql(CAD coleccion) {
+        RETORNAR uix_guardar_nosql(id | coleccion)
+    },
+    FN save_nosql(CAD collection) {
+        RETORNAR guardar_nosql(collection)
+    },
+
+    FN cargar_nosql(CAD coleccion) {
+        RETORNAR uix_cargar_nosql(id | coleccion)
+    },
+    FN load_nosql(CAD collection) {
+        RETORNAR cargar_nosql(collection)
+    }
+}.
+
+# Clase de Alto Nivel para gestionar interfaces graficas declarativas TigerUIX
+InterfazUIX {
+    CRE ENT activa = 0,
+    CRE ENT active = 0,
+
+    FN abrir(definicion) {
+        activa <- uix_interfaz(definicion),
+        active <- activa,
+        RETORNAR activa
+    },
+    FN open(definition) {
+        RETORNAR abrir(definition)
+    },
+
+    FN ejecutar(definicion) {
+        activa <- uix_interfaz(definicion),
+        active <- activa,
+        MIENTRAS activa {
+            activa <- uix_actualizar(),
+            active <- activa,
+        },
+        RETORNAR uix_cerrar()
+    },
+    FN run(definition) {
+        RETORNAR ejecutar(definition)
+    },
+
+    FN actualizar() {
+        activa <- uix_actualizar(),
+        active <- activa,
+        RETORNAR activa
+    },
+    FN update() {
+        RETORNAR actualizar()
+    },
+
+    FN cerrar() {
+        activa <- 0,
+        active <- 0,
+        RETORNAR uix_cerrar()
+    },
+    FN close() {
+        RETORNAR cerrar()
+    }
+}.
+
+# Alias en ingles para la clase de interfaz
+UIXInterface {
+    CRE ENT active = 0,
+
+    FN open(definition) {
+        active <- uix_interfaz(definition),
+        RETORNAR active
+    },
+    FN run(definition) {
+        active <- uix_interfaz(definition),
+        MIENTRAS active {
+            active <- uix_actualizar(),
+        },
+        RETORNAR uix_cerrar()
+    },
+    FN update() {
+        active <- uix_actualizar(),
+        RETORNAR active
+    },
+    FN close() {
+        active <- 0,
+        RETORNAR uix_cerrar()
+    }
+}.

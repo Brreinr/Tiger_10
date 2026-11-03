@@ -17,9 +17,20 @@
 #ifndef strtoll
 #define strtoll _strtoi64
 #endif
+#ifndef strtoull
+#define strtoull _strtoui64
+#endif
 #else
 #include <unistd.h>
 #endif
+
+/* Colores ANSI Neón de Tiger */
+#define TIGER_COLOR_ORANGE "\033[38;2;255;107;0m"
+#define TIGER_COLOR_CYAN   "\033[38;2;0;243;255m"
+#define TIGER_COLOR_GREEN  "\033[38;2;34;197;94m"
+#define TIGER_COLOR_RED    "\033[38;2;239;68;68m"
+#define TIGER_COLOR_YELLOW "\033[38;2;234;179;8m"
+#define TIGER_COLOR_RESET  "\033[0m"
 
 /* Operaciones atómicas nativas x86_64 de 1 ciclo CPU sin bloqueos */
 static inline int64_t tiger_atomic_add_i64(volatile int64_t* target, int64_t val) {
@@ -139,6 +150,7 @@ TigerValue tiger_val_str_take(char* s);
 TigerValue tiger_val_array_new(void);
 TigerValue tiger_val_dict_new(void);
 TigerValue tiger_val_instance_new(const char* class_name);
+void tiger_array_reserve(TigerArray* arr, size_t capacity);
 void tiger_array_push(TigerArray* arr, TigerValue val);
 void tiger_dict_set(TigerDict* dict, const char* key, TigerValue val);
 bool tiger_dict_get(TigerDict* dict, const char* key, TigerValue* out_val);
@@ -148,6 +160,8 @@ TigerValue tiger_val_copy(TigerValue v);
 bool tiger_val_is_truthy(TigerValue v);
 void tiger_val_print(TigerValue v, bool newline);
 char* tiger_val_to_string(TigerValue v);
+size_t tiger_val_format_buf(TigerValue v, char* dst, size_t max_size);
+void tiger_io_flush_fast(void);
 bool tiger_val_equals(TigerValue a, TigerValue b);
 
 /* ========================================================================= */
@@ -165,8 +179,22 @@ static inline uint64_t tiger_hash64(const char* s) {
     return h;
 }
 
+/* Hash FNV-1a de 64 bits insensible a mayúsculas/minúsculas */
+static inline uint64_t tiger_hash64_ci(const char* s) {
+    if (!s) return 0;
+    uint64_t h = 14695981039346656037ULL;
+    while (*s) {
+        unsigned char c = (unsigned char)(*s++);
+        if (c >= 'A' && c <= 'Z') c += 32;
+        h ^= c;
+        h *= 1099511628211ULL;
+    }
+    return h;
+}
+
 typedef struct TigerVarEntry {
     char* name;
+    char inline_name[32];
     uint64_t hash;
     TigerValue value;
     bool is_const;
@@ -174,7 +202,7 @@ typedef struct TigerVarEntry {
     struct TigerVarEntry* next;
 } TigerVarEntry;
 
-#define TIGER_ENV_BUCKETS 256
+#define TIGER_ENV_BUCKETS 32
 #define TIGER_ENV_MASK (TIGER_ENV_BUCKETS - 1)
 
 typedef struct TigerEnv {
@@ -184,12 +212,27 @@ typedef struct TigerEnv {
 
 TigerEnv* tiger_env_new(TigerEnv* parent);
 void tiger_env_free(TigerEnv* env);
+void tiger_env_set_parallel_mode(bool active);
+
+/* Bandera global: true solo mientras un bloque PARALELO tiene hilos activos.
+   Activa conteo de referencias atómico, impresión protegida y desactiva el pool. */
+extern volatile bool g_tiger_parallel_active;
+
+static inline int tiger_rc_inc(int* rc) {
+    if (g_tiger_parallel_active) return __atomic_add_fetch(rc, 1, __ATOMIC_ACQ_REL);
+    return ++(*rc);
+}
+static inline int tiger_rc_dec(int* rc) {
+    if (g_tiger_parallel_active) return __atomic_sub_fetch(rc, 1, __ATOMIC_ACQ_REL);
+    return --(*rc);
+}
 bool tiger_env_set(TigerEnv* env, const char* name, TigerValue val, bool is_const, TigerValType type_req);
 bool tiger_env_set_fast(TigerEnv* env, const char* name, uint64_t hash, TigerValue val, bool is_const, TigerValType type_req);
 bool tiger_env_assign(TigerEnv* env, const char* name, TigerValue val);
 bool tiger_env_assign_fast(TigerEnv* env, const char* name, uint64_t hash, TigerValue val);
 bool tiger_env_get(TigerEnv* env, const char* name, TigerValue* out_val);
 bool tiger_env_get_fast(TigerEnv* env, const char* name, uint64_t hash, TigerValue* out_val);
+TigerVarEntry* tiger_env_lookup_entry(TigerEnv* env, const char* name, uint64_t hash);
 
 /* ========================================================================= */
 /* 3. TOKENS Y LEXER BILINGÜE                                                */
@@ -225,7 +268,6 @@ typedef enum {
     TOK_CLASE,      /* CLASE, CLASS, OBJETO, OBJECT */
     TOK_MOLDE,      /* MOLDE, MOLD */
     TOK_CRE,        /* CRE, CAMPO, FIELD, PROP, PROPERTY, PROPIEDAD, ATTR */
-    TOK_METODO,     /* METODO, METHOD */
     TOK_TIPO,       /* TIPO, TYPE */
     TOK_MACRO,      /* MACRO */
     TOK_BCI,        /* BCI, BRAIN, INTERFAZ */
@@ -301,5 +343,8 @@ typedef struct {
 /* ========================================================================= */
 
 char* tiger_read_file_resilient(const char* filepath, size_t* out_size);
+char* tiger_read_self_payload(const char* self_path, size_t* out_size);
+
+#define TIGER_PACK_MAGIC 0x5447525041434B31ULL /* "TGRPACK1" */
 
 #endif /* TIGER_H */

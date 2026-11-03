@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
     lrun("Prueba de Punteros en Silicio", prueba_punteros);
     lresults();
 
-    printf("\n[OK] Modulo C 'test.c' ejecutado exitosamente sin errores.\n");
+    printf("\n[OK] Modulo C 'tests/test.c' ejecutado exitosamente sin errores.\n");
     return lfails != 0;
 }
 

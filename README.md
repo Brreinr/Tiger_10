@@ -1,20 +1,27 @@
-# 🐯 Tiger 10.1 — Lenguaje de Programación Bilingüe, Arquitectura de Silicio y Metalenguaje Universal
+# 🐯 Tiger 10.2 — Lenguaje de Programación Bilingüe, Arquitectura de Silicio y Metalenguaje Universal
 
-[![Version](https://img.shields.io/badge/Tiger-10.1%20Silicio-orange.svg)](https://github.com)
-[![Plataforma](https://img.shields.io/badge/Plataforma-Windows%20x64-blue.svg)](https://github.com)
+[![Version](https://img.shields.io/badge/Tiger-10.2%20Silicio-orange.svg)](https://github.com)
+[![Plataforma](https://img.shields.io/badge/Plataformas-Windows%20|%20Android%20|%20Linux%20|%20macOS%20|%20iOS%20|%20Web-blue.svg)](https://github.com)
 [![Rendimiento](https://img.shields.io/badge/Poliglota%20RAM-0.41%20ms%20(284x)-green.svg)](https://github.com)
 [![SIMD](https://img.shields.io/badge/SIMD-AVX2%20256--bit-red.svg)](https://github.com)
 [![Seguridad](https://img.shields.io/badge/Seguridad-Blindaje%20Activo-brightgreen.svg)](https://github.com)
 [![Licencia](https://img.shields.io/badge/Licencia-TCEL-purple.svg)](LICENSE)
 
-**Tiger 10.1** es un lenguaje de programación de ultra-alto rendimiento, **100% bilingüe (Español / English)** y un **metalenguaje universal políglota**, diseñado para desarrolladores, investigadores de IA, ingenieros de sistemas e interfaces cerebro-computadora (BCI). Construido con un núcleo nativo en C optimizado para Windows x86_64, Tiger combina la legibilidad humana con velocidad de silicio (**0.41 ms** en políglota y **23 microsegundos** en llamadas directas).
+**Tiger 10.2** es un lenguaje de programación de ultra-alto rendimiento, **100% bilingüe (Español / English)** y un **metalenguaje universal políglota**, diseñado para desarrolladores, investigadores de IA, ingenieros de sistemas e interfaces cerebro-computadora (BCI). Construido con un núcleo nativo en C optimizado para Windows x86_64, Tiger combina la legibilidad humana con velocidad de silicio (**0.41 ms** en políglota y **23 microsegundos** en llamadas directas).
 
 Como **metalenguaje maestro**, Tiger orquesta e intercambia memoria en tiempo real entre múltiples lenguajes (**Python, C/C++, JavaScript/Node.js, Ensamblador x86_64 y WebAssembly**) en un único entorno coordinado y protegido contra amenazas de ciberseguridad.
 
 ---
 
-## ⚡ Novedades Principales de Tiger 10.1
+## ⚡ Novedades Principales de Tiger 10.2
 
+* 🚀 **Arquitectura Modular Desacoplada y Núcleo Ultra-Ligero:** División en `tiger.exe` (núcleo de ejecución veloz < 1 ms, peso de solo **422 KB** y REPL), `tiger-compiler.exe` (compilador incremental dedicado) y `empaquetar.exe` (empaquetador multiplataforma).
+* ♻️ **Recolector de Basura con Temporizador en Segundo Plano (Tiger Timed GC):** Hilo asíncrono no bloqueante en background (`gc_iniciar(ms)`, `gc_detener()`, `gc_recolectar()`, `gc_estadisticas()`) que audita y recicla memoria automáticamente a intervalos de tiempo configurables.
+* ⚡ **Aceleración Nativa de Silicio (CPU, GPU, NPU, BCI):** Detección directa de NPU por DXCore (`Intel(R) AI Boost` / NPU dedicada) y fallback automático a motor vectorial AVX2 con CPUID zero-allocation.
+* 🧩 **Módulos Compartidos Bajo Demanda (On-Demand Loading):** Módulos opcionales para CPU, GPU, NPU, IA, BCI e Interfaces Gráficas (`tiger_mod_*.dll`), cargados en memoria RAM **únicamente cuando el programa los invoca** (0% carga al inicio, huella de RAM < 5.5 MB).
+* ⚡ **Compilación Incremental y Caché Inteligente (`.tiger_cache/`):** Hash criptográfico de contenido y opciones de compilación. En Cache HIT la recompilación se evita por completo (< 0.05 ms).
+* 🏎️ **Optimización Configurable al Silicio (-O1 Dev vs -O3 Release):** Modo desarrollo (`--dev`, `-O1`, símbolos debug activos para depuración rápida) y modo producción (`--release`, `-O3`, vectorización AVX2/FMA, Link-Time Optimization `--lto` y strip de símbolos de depuración para distribución limpia).
+* 📊 **Telemetría de Memoria RAM en Tiempo Real:** Medición de Working Set, Pico de RAM y memoria del Arena Allocator accesible con `tiger --ram` o `:ram` en el REPL.
 * 🚀 **Aceleración Políglota con Demonios Persistentes en RAM:** Ejecución de bloques Python y JavaScript mediante tuberías bidireccionales precalentadas en memoria en **0.41 ms** (aceleración de **284x a 566x** frente al arranque en frío de Windows).
 * ⚡ **Arena Allocator Lineal Cero (`VirtualAlloc` + `lock xaddq`):** Asignación atómica de memoria de 64 MB en un solo ciclo de reloj x86_64 sin fragmentación de heap y reciclaje en tiempo constante $O(1)$.
 * 🧠 **Silicio BCI y Punteros Libres de Aliasing (`pointc`):** Control de registros físicos de la CPU (`RAX` hasta `R15`) y memoria física restrict con canarios centinela contra desbordamientos.
@@ -33,47 +40,60 @@ El proyecto está diseñado para ser autocontenido, modular y fácil de desplega
 ```text
 Tiger/
 ├── bin/                          # Binarios y motores de ejecución
-│   ├── tiger.exe                 # Motor principal de Tiger 10.1 (compilador e intérprete)
-│   ├── tiger_c.exe               # Binario nativo C compilado
-│   ├── tiger.cmd                 # Launcher para consola de Windows
-│   ├── tiger.bat                 # Script de ejecución por lotes
-│   ├── node/                     # Motor JavaScript Node.js preconfigurado
+│   ├── tiger.exe                 # Núcleo Ligero en C (Arranque < 1 ms, REPL y Runner)
+│   ├── tiger-compiler.exe        # Compilador Dedicado Incremental con Caché (.tiger_cache/)
+│   ├── empaquetar.exe            # Empaquetador Multiplataforma (Win, Web, APK, Linux, Mac)
+│   ├── tiger_mod_*.dll           # Módulos compartidos opcionales cargados bajo demanda:
+│   │   ├── tiger_mod_uix.dll     # Interfaz Gráfica, ClearType, Ventanas y Multimedia
+│   │   ├── tiger_mod_ai.dll      # Copiloto IA y Servidor MCP
+│   │   ├── tiger_mod_cpu.dll     # Paralelismo multi-hilo y concurrencia
+│   │   ├── tiger_mod_gpu.dll     # Aceleración GPU y Shaders
+│   │   ├── tiger_mod_npu.dll     # Motor tensorial NPU / SIMD
+│   │   └── tiger_mod_bci.dll     # Telemetría BCI / Neuro-interfaz
 │   └── tcc/                      # Tiny C Compiler nativo x64
 │
-├── src/                          # Núcleo modular del motor en C de Tiger
-│   ├── tiger.h                   # Definiciones y encabezados globales
-│   ├── tiger_main.c              # Punto de entrada, CLI y ciclo de vida de demonios
-│   ├── tiger_interp.c            # Intérprete y funciones nativas (BCI, SIMD, Seguridad)
-│   ├── tiger_c_interop.c         # Puente políglota, demonios en RAM y Job Objects
-│   ├── tiger_c_interop.h         # API de interoperabilidad y benchmark políglota
-│   ├── tiger_arena.c / .h        # Arena Allocator lineal cero (VirtualAlloc)
-│   ├── tiger_simd.c / .h         # Aceleración vectorial SIMD AVX2
-│   ├── tiger_lexer.c / .h        # Analizador léxico con detector inteligente
-│   ├── tiger_parser.c / .h       # Analizador sintáctico bilingüe
-│   ├── tiger_ast.c / .h          # Árbol de sintaxis abstracta (AST)
-│   └── tiger_parallel.c / .h     # Despachador concurrente lock-free de 4 hilos
+├── src/                          # Código fuente del motor C de Tiger
+│   ├── tiger.h                   # Encabezados globales y tipos de valor
+│   ├── tiger_main.c              # Punto de entrada del núcleo ligero y REPL
+│   ├── tiger_compiler_main.c     # CLI y orquestador del compilador nativo
+│   ├── tiger_empaquetar.c        # Motor del empaquetador multiplataforma
+│   ├── tiger_cache.c / .h        # Sistema de caché incremental (.tiger_cache/)
+│   ├── tiger_modules.c / .h      # Gestor de carga perezosa y telemetría RAM
+│   ├── tiger_cgen.c / .h         # Generador de código al silicio nativo y LLVM
+│   ├── tiger_parser.c / .h       # Analizador sintáctico independiente
+│   ├── tiger_lexer.c / .h        # Analizador léxico bilingüe
+│   ├── tiger_ast.c / .h          # Árbol de sintaxis abstracta
+│   ├── tiger_interp.c / .h       # Intérprete y funciones de silicio
+│   ├── tiger_native_hw.c / .h    # Subsistema de hardware y renderizado ClearType
+│   ├── tiger_ai_chat.c / .h      # Copiloto IA y servidor MCP
+│   ├── tiger_c_interop.c / .h    # Puente políglota y demonios en RAM
+│   └── modules/                  # Fuentes de los módulos compartidos (.dll)
+│
+├── docs/                         # Centro de Documentación Técnica
+│   ├── ARQUITECTURA_MODULAR.md   # Desglose de arquitectura modular, -O1 vs -O3, LTO y RAM
+│   ├── MANUAL_TIGER_UIX.md       # Manual de UIX, IDs reactivos, JSON y NoSQL
+│   ├── GUIA_EMPAQUETAR.md        # Guía de distribución multiplataforma
+│   └── REFERENCIA_CLI.md         # Referencia exhaustiva de comandos CLI
+│
+├── examples/                     # Catálogo de Aplicaciones y Demos (.tg)
+│   ├── TigerUIXDemo.tg           # Demo UIX reactivo con IDs y persistencia NoSQL
+│   ├── juego_arcade.tg           # Videojuego 2D a 60 FPS con antialiasing y sonido
+│   ├── TigerMobileApp.tg         # App móvil adaptable (Android/Web/iOS)
+│   ├── demo_app.tg               # Demostración de algoritmos nativos
+│   └── README.md                 # Guía de ejecución de ejemplos
+│
+├── tests/                        # Banco de Pruebas y Tests Unitarios
+│   ├── test_uix_id_backend.tg    # Test de integración UIX, IDs y backend NoSQL
+│   ├── test.c                    # Test de verificación de runtime C
+│   └── README.md                 # Guía de ejecución de tests
 │
 ├── tools/                        # Herramientas del entorno y librerías estándar
-│   ├── Libraries/                # Librerías nativas (.tg)
-│   │   ├── hacking.tg            # Auditoría de seguridad y análisis de redes
-│   │   ├── neural.tg             # Redes neuronales y activaciones IA
-│   │   ├── web.tg                # Servidores HTTP y WebSockets
-│   │   └── juego.tg              # Motor gráfico 2D y bucle de juego
-│   ├── tiger_daemon.py           # Demonio de persistencia en RAM para Python
-│   └── tiger_daemon.js           # Demonio de persistencia en RAM para Node.js
+│   └── Libraries/                # Librerías nativas Tiger (TigerUIX.tg, web.tg, neural.tg)
 │
 ├── vscode-tiger/                 # Extensión oficial para Visual Studio Code
-│   ├── themes/                   # Tema oficial 'Tiger Neon'
-│   ├── syntaxes/                 # Coloreado sintáctico gramatical (.tg)
-│   ├── snippets/                 # Atajos y autocompletado bilingüe
-│   └── icons/                    # Tema de iconos de archivo Tiger
-│
-├── archivo.tg                    # Aplicación de escritorio nativa Win32 (GUI no-web)
-├── ejemplo.tg                    # Banco de pruebas de simulación adversaria y seguridad
-├── compilar_c.bat                # Compilación instantánea del motor C con TCC (< 3 s)
-├── lib_ext.json                  # Gestor de dependencias externas (Python pip y C/C++ headers)
-├── README.md                     # Documentación en Español
-├── README_EN.md                  # Documentation in English
+├── compilar_c.bat                # Script de compilación del núcleo, compilador y módulos
+├── README.md                     # Documentación principal en Español
+├── README_EN.md                  # Main Documentation in English
 └── LICENSE                       # Licencia TCEL
 ```
 
@@ -96,7 +116,7 @@ tiger setup
 
 ---
 
-## 🚀 Cómo Usar Tiger 10.1
+## 🚀 Cómo Usar Tiger 10.2
 
 ### 1. Ejecutar un archivo `.tg`:
 ```powershell
@@ -133,12 +153,11 @@ Al ejecutar `benchmark_poliglota.tg`, Tiger evalúa un vector de cálculo matem�
 | Arquitectura de Ejecución Políglota | Tiempo Real | Aceleración Relativa | Descripción Técnica |
 | :--- | :---: | :---: | :--- |
 | **Baseline (Cold Start)** | `116.87 ms` | **1.0x** (Referencia) | `CreateProcessA` tradicional de Windows cargando el runtime desde disco. |
-| **Nivel 1: Fast Flags** | `72.58 ms` | **1.6x más rápido** | Aislamiento de arranque rápido (`-S -B -u` en Python y Node optimizado). |
-| **Nivel 2: Demonio en RAM** | **`0.41 ms`** | **🚀 284x - 566x más rápido** | Tuberías IPC bidireccionales en memoria con demonios persistentes y vaciado en $O(1)$. |
-| **Nivel 3: Silicio In-Process** | **`0.026 ms`** | **⚡ 4500x más rápido** | Evaluación directa a nivel de procesador en espacio de direcciones compartido ($26\ \mu\text{s}$). |
+| **Nivel 1: Tuberías en Memoria (Fast Flags)** | `72.58 ms` | **1.6x más rápido** | Aislamiento de arranque rápido y paso de datos por stdin (`-S -B -u` en Python y Node optimizado sin tocar disco). |
+| **Nivel 2: Silicio In-Process** | **`0.026 ms`** | **⚡ 4500x más rápido** | Evaluación directa a nivel de procesador en espacio de direcciones compartido ($26\ \mu\text{s}$). |
 
 > [!TIP]
-> Los demonios persistentes de Tiger (`tools/tiger_daemon.py` y `tools/tiger_daemon.js`) mantienen los intérpretes precalentados en memoria RAM. Al ejecutar código, los datos se transfieren por tuberías anónimas con vaciado de estado automático, garantizando cero acumulación de memoria y ejecución en sub-milisegundos.
+> Tiger ejecuta los fragmentos políglotas directamente a través de tuberías anónimas en memoria RAM (`python -S -B -u -` y `node -`) sin necesidad de archivos temporales en disco ni demonios residentes, garantizando máxima portabilidad y ejecución limpia.
 
 ---
 
@@ -259,7 +278,7 @@ IMPRIMIR sensor.microvoltios.
 
 ## 🛡️ Blindaje de Ciberseguridad y Resiliencia
 
-Tiger 10.1 incorpora mecanismos de seguridad activa a nivel de kernel y de compilador:
+Tiger 10.2 incorpora mecanismos de seguridad activa a nivel de kernel y de compilador:
 
 ```mermaid
 flowchart TD
@@ -320,3 +339,5 @@ tiger status
 ## 📄 Licencia
 
 Este proyecto está distribuido bajo la **Licencia de Comunidad y Evaluación de Tiger (TCEL)**. Es completamente gratuito para uso personal, educativo, investigación y aportes de la comunidad, protegiendo los derechos de autor contra reventa o apropiación comercial no autorizada. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+
+

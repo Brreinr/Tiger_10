@@ -308,6 +308,7 @@ TigerStmt* tiger_stmt_while(TigerExpr* cond, TigerStmt** body, size_t count, int
     s->as.while_stmt.condition = cond;
     s->as.while_stmt.body = body;
     s->as.while_stmt.body_count = count;
+    s->as.while_stmt.is_parallel = false;
     return s;
 }
 
@@ -368,6 +369,14 @@ TigerStmt* tiger_stmt_assistant(const char* api_key, const char* model, const ch
     return s;
 }
 
+TigerStmt* tiger_stmt_hw_target(int target, TigerStmt** body, size_t count, int line) {
+    TigerStmt* s = alloc_stmt(STMT_HW_TARGET, line);
+    s->as.hw_target.target = target;
+    s->as.hw_target.body = body;
+    s->as.hw_target.body_count = count;
+    return s;
+}
+
 void tiger_stmt_free(TigerStmt* stmt) {
     if (!stmt) return;
     switch (stmt->type) {
@@ -425,6 +434,14 @@ void tiger_stmt_free(TigerStmt* stmt) {
             if (stmt->as.assistant.model) free(stmt->as.assistant.model);
             if (stmt->as.assistant.prompt) free(stmt->as.assistant.prompt);
             if (stmt->as.assistant.target_var) free(stmt->as.assistant.target_var);
+            break;
+        case STMT_HW_TARGET:
+            if (stmt->as.hw_target.body) {
+                for (size_t i = 0; i < stmt->as.hw_target.body_count; i++) {
+                    tiger_stmt_free(stmt->as.hw_target.body[i]);
+                }
+                free(stmt->as.hw_target.body);
+            }
             break;
         default:
             break;

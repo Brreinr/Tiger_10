@@ -55,7 +55,14 @@ bool tiger_execute_json_block(TigerEnv* env, const char* json_code, const char* 
 bool tiger_execute_nosql_block(TigerEnv* env, const char* nosql_code, const char* target_var);
 bool tiger_execute_bi_block(TigerEnv* env, const char* hex_code, const char* target_var);
 
-/* Asistente IA / Copiloto MCP integrado */
+/* Asistente IA / Copiloto MCP integrado (Lectura, Ejecucion, Modificacion y Hardware) */
 bool tiger_assistant_call(TigerEnv* env, const char* api_key, const char* model, const char* prompt, const char* target_var);
+TigerValue tiger_assistant_eval(TigerEnv* env, const char* arg0, const char* arg1, const char* arg2);
+
+/* Control de Administración y Seguridad de la IA (Consent Gate Bilingüe) */
+void tiger_ai_set_admin_granted(bool granted);
+bool tiger_ai_is_admin_granted(void);
+void tiger_ai_show_admin_status(void);
+bool tiger_ai_check_admin_permission(const char* operation_desc);
 
 #endif /* TIGER_C_INTEROP_H */

@@ -1,0 +1,437 @@
+USAR "juego.tg".
+
+# ==============================================================================
+# TIGER STRIKE 2D: DEFENSA DEL SILICIO
+# Videojuego Arcade 2D escrito 100% en codigo Tiger puro (.tg)
+# ==============================================================================
+
+IMPRIMIR "==================================================================".
+IMPRIMIR "  TIGER STRIKE 2D - MOTOR ARCADE 100% EN CODIGO TIGER PURO (.TG)".
+IMPRIMIR "  Controles: [WASD / Flechas] Mover | [ESPACIO] Disparar | [ESC] Salir".
+IMPRIMIR "==================================================================".
+
+# 1. Dimensiones y Estado General
+ENT VAR ANCHO = 860.
+ENT VAR ALTO = 620.
+ENT VAR FPS = 60.
+
+ENT VAR puntos = 0.
+ENT VAR record = 0.
+ENT VAR vidas = 3.
+ENT VAR escudo = 100.
+ENT VAR nivel = 1.
+ENT VAR bajas = 0.
+ENT VAR combo = 1.
+ENT VAR game_over = 0.
+ENT VAR cuadro = 0.
+
+# 2. Estado de la Nave del Jugador
+ENT VAR jx = 400.
+ENT VAR jy = 510.
+ENT VAR jw = 48.
+ENT VAR jh = 38.
+ENT VAR jvel = 8.
+ENT VAR invulnerable = 0.
+
+# 3. Sistema de Disparo Doble Laser
+ENT VAR laser1_activo = 0.
+ENT VAR laser1_x = 0.
+ENT VAR laser1_y = 0.
+
+ENT VAR laser2_activo = 0.
+ENT VAR laser2_x = 0.
+ENT VAR laser2_y = 0.
+
+ENT VAR recarga_laser = 0.
+
+# 4. Escuadron de Enemigos (Caza Ligero, Crucero Pesado y Meteoro)
+ENT VAR e1_x = 140.
+ENT VAR e1_y = 90.
+ENT VAR e1_vx = 4.
+ENT VAR e1_vy = 2.
+ENT VAR e1_vida = 30.
+
+ENT VAR e2_x = 420.
+ENT VAR e2_y = 110.
+ENT VAR e2_vx = 3.
+ENT VAR e2_vida = 100.
+ENT VAR e2_vida_max = 100.
+
+ENT VAR met_x = 680.
+ENT VAR met_y = 80.
+ENT VAR met_vx = -2.
+ENT VAR met_vy = 5.
+ENT VAR met_radio = 18.
+
+# 5. Efecto de Explosion de Particulas en Tiger Puro
+ENT VAR exp_tiempo = 0.
+ENT VAR exp_x = 0.
+ENT VAR exp_y = 0.
+ENT VAR exp_radio = 4.
+
+# 6. Estrellas de Fondo Parallax
+ENT VAR est1_x = 90.
+ENT VAR est1_y = 120.
+ENT VAR est2_x = 240.
+ENT VAR est2_y = 310.
+ENT VAR est3_x = 410.
+ENT VAR est3_y = 190.
+ENT VAR est4_x = 580.
+ENT VAR est4_y = 440.
+ENT VAR est5_x = 740.
+ENT VAR est5_y = 260.
+ENT VAR est6_x = 160.
+ENT VAR est6_y = 520.
+ENT VAR est7_x = 650.
+ENT VAR est7_y = 140.
+ENT VAR est8_x = 330.
+ENT VAR est8_y = 480.
+
+# Abrir lienzo 2D nativo controlado por el bucle de Tiger
+ventana_2d_abrir("Tiger Strike 2D - 100% Codigo Tiger Puro" | ANCHO | ALTO | FPS).
+
+# ==============================================================================
+# BUCLE PRINCIPAL DEL JUEGO EN CODIGO TIGER PURO
+# ==============================================================================
+MIENTRAS ventana_2d_actualizar() == 1 {
+    cuadro <- cuadro + 1,
+
+    # 1. Limpiar pantalla (Azul profundo espacial)
+    limpiar_2d(8 | 12 | 26),
+
+    # 2. Actualizar y dibujar estrellas parallax
+    est1_y <- est1_y + 2,
+    SI est1_y > ALTO { est1_y <- 70, est1_x <- azar(20 | ANCHO - 20) },
+    dibujar_rect_2d(est1_x | est1_y | 2 | 2 | 160 | 180 | 255),
+
+    est2_y <- est2_y + 4,
+    SI est2_y > ALTO { est2_y <- 70, est2_x <- azar(20 | ANCHO - 20) },
+    dibujar_rect_2d(est2_x | est2_y | 3 | 3 | 220 | 240 | 255),
+
+    est3_y <- est3_y + 3,
+    SI est3_y > ALTO { est3_y <- 70, est3_x <- azar(20 | ANCHO - 20) },
+    dibujar_rect_2d(est3_x | est3_y | 2 | 2 | 140 | 200 | 255),
+
+    est4_y <- est4_y + 5,
+    SI est4_y > ALTO { est4_y <- 70, est4_x <- azar(20 | ANCHO - 20) },
+    dibujar_rect_2d(est4_x | est4_y | 3 | 3 | 255 | 255 | 255),
+
+    est5_y <- est5_y + 2,
+    SI est5_y > ALTO { est5_y <- 70, est5_x <- azar(20 | ANCHO - 20) },
+    dibujar_rect_2d(est5_x | est5_y | 2 | 2 | 180 | 190 | 240),
+
+    est6_y <- est6_y + 4,
+    SI est6_y > ALTO { est6_y <- 70, est6_x <- azar(20 | ANCHO - 20) },
+    dibujar_rect_2d(est6_x | est6_y | 2 | 2 | 120 | 220 | 255),
+
+    est7_y <- est7_y + 6,
+    SI est7_y > ALTO { est7_y <- 70, est7_x <- azar(20 | ANCHO - 20) },
+    dibujar_rect_2d(est7_x | est7_y | 3 | 4 | 200 | 250 | 255),
+
+    est8_y <- est8_y + 3,
+    SI est8_y > ALTO { est8_y <- 70, est8_x <- azar(20 | ANCHO - 20) },
+    dibujar_rect_2d(est8_x | est8_y | 2 | 2 | 180 | 180 | 220),
+
+    # Si estamos en Game Over, permitir reiniciar con [R] (VK 82)
+    SI game_over == 1 {
+        dibujar_rect_2d(180 | 200 | 500 | 210 | 18 | 24 | 46),
+        dibujar_linea_2d(180 | 200 | 680 | 200 | 3 | 255 | 70 | 90),
+        dibujar_linea_2d(180 | 410 | 680 | 410 | 3 | 255 | 70 | 90),
+        dibujar_texto_2d(275 | 230 | "MISION TERMINADA - GAME OVER" | 24 | 255 | 80 | 100),
+        dibujar_texto_2d(260 | 280 | "PUNTUACION FINAL: " + puntos | 20 | 0 | 240 | 255),
+        dibujar_texto_2d(260 | 315 | "RECORD MAXIMO:    " + record | 18 | 255 | 215 | 0),
+        dibujar_texto_2d(235 | 365 | "Presiona [R] para Reiniciar o [ESC] para Salir" | 16 | 200 | 220 | 255),
+
+        SI tecla_presionada(82) == 1 {
+            vidas <- 3,
+            escudo <- 100,
+            puntos <- 0,
+            nivel <- 1,
+            bajas <- 0,
+            combo <- 1,
+            jx <- 400,
+            jy <- 510,
+            e1_y <- 90,
+            e2_y <- 110,
+            e2_vida <- 100,
+            met_y <- 80,
+            game_over <- 0
+        }
+    } SINO {
+        # ======================================================================
+        # LOGICA ACTIVA DEL JUEGO (MOVIMIENTO, DISPAROS, FISICAS Y COLISIONES)
+        # ======================================================================
+
+        # Turbo con tecla SHIFT (VK 16)
+        jvel <- 8,
+        SI tecla_presionada(16) == 1 {
+            SI escudo > 0 {
+                jvel <- 13,
+                SI cuadro % 3 == 0 {
+                    escudo <- escudo - 1
+                }
+            }
+        } SINO {
+            SI escudo < 100 {
+                SI cuadro % 10 == 0 {
+                    escudo <- escudo + 1
+                }
+            }
+        },
+
+        # Movimiento Izquierda: Flecha Izq (37) o A (65)
+        SI tecla_presionada(37) == 1 O tecla_presionada(65) == 1 {
+            jx <- jx - jvel
+        },
+        # Movimiento Derecha: Flecha Der (39) o D (68)
+        SI tecla_presionada(39) == 1 O tecla_presionada(68) == 1 {
+            jx <- jx + jvel
+        },
+        # Movimiento Arriba: Flecha Arriba (38) o W (87)
+        SI tecla_presionada(38) == 1 O tecla_presionada(87) == 1 {
+            jy <- jy - jvel
+        },
+        # Movimiento Abajo: Flecha Abajo (40) o S (83)
+        SI tecla_presionada(40) == 1 O tecla_presionada(83) == 1 {
+            jy <- jy + jvel
+        },
+
+        # Limitar nave dentro de la arena
+        jx <- limitar_valor(jx | 20 | ANCHO - jw - 20),
+        jy <- limitar_valor(jy | 85 | ALTO - jh - 35),
+
+        # Reducir temporizadores
+        SI recarga_laser > 0 {
+            recarga_laser <- recarga_laser - 1
+        },
+        SI invulnerable > 0 {
+            invulnerable <- invulnerable - 1
+        },
+
+        # Disparar con ESPACIO (VK 32)
+        SI tecla_presionada(32) == 1 {
+            SI recarga_laser == 0 {
+                SI laser1_activo == 0 {
+                    laser1_activo <- 1,
+                    laser1_x <- jx + 8,
+                    laser1_y <- jy - 6,
+                    recarga_laser <- 8
+                } SINO {
+                    SI laser2_activo == 0 {
+                        laser2_activo <- 1,
+                        laser2_x <- jx + jw - 12,
+                        laser2_y <- jy - 6,
+                        recarga_laser <- 8
+                    }
+                }
+            }
+        },
+
+        # Actualizar Laser 1
+        SI laser1_activo == 1 {
+            laser1_y <- laser1_y - 18,
+            dibujar_rect_2d(laser1_x | laser1_y | 4 | 18 | 0 | 255 | 200),
+            SI laser1_y < 65 {
+                laser1_activo <- 0
+            }
+        },
+
+        # Actualizar Laser 2
+        SI laser2_activo == 1 {
+            laser2_y <- laser2_y - 18,
+            dibujar_rect_2d(laser2_x | laser2_y | 4 | 18 | 0 | 255 | 200),
+            SI laser2_y < 65 {
+                laser2_activo <- 0
+            }
+        },
+
+        # ----------------------------------------------------------------------
+        # ENEMIGO 1: Caza Interceptor (Movimiento en Zig-Zag y descenso)
+        # ----------------------------------------------------------------------
+        e1_x <- e1_x + e1_vx,
+        e1_y <- e1_y + e1_vy,
+        SI e1_x <= 25 O e1_x >= ANCHO - 75 {
+            e1_vx <- 0 - e1_vx
+        },
+        SI e1_y > ALTO - 40 {
+            e1_y <- 80,
+            e1_x <- azar(50 | ANCHO - 90),
+            combo <- 1
+        },
+
+        # Impacto de Laser 1 o 2 contra Caza 1
+        SI laser1_activo == 1 {
+            SI colision_2d(laser1_x | laser1_y | 4 | 18 | e1_x | e1_y | 44 | 28) == 1 {
+                laser1_activo <- 0,
+                e1_vida <- e1_vida - 30
+            }
+        },
+        SI laser2_activo == 1 {
+            SI colision_2d(laser2_x | laser2_y | 4 | 18 | e1_x | e1_y | 44 | 28) == 1 {
+                laser2_activo <- 0,
+                e1_vida <- e1_vida - 30
+            }
+        },
+
+        SI e1_vida <= 0 {
+            exp_tiempo <- 12,
+            exp_x <- e1_x + 22,
+            exp_y <- e1_y + 14,
+            exp_radio <- 6,
+            puntos <- puntos + (100 * combo),
+            bajas <- bajas + 1,
+            combo <- combo + 1,
+            e1_vida <- 30 + (nivel * 10),
+            e1_x <- azar(50 | ANCHO - 90),
+            e1_y <- 75
+        },
+
+        # Dibujar Caza Interceptor
+        dibujar_rect_2d(e1_x | e1_y | 44 | 22 | 255 | 60 | 95),
+        dibujar_rect_2d(e1_x + 12 | e1_y + 18 | 20 | 10 | 255 | 140 | 60),
+
+        # ----------------------------------------------------------------------
+        # ENEMIGO 2: Crucero Acorazado (Con barra de vida)
+        # ----------------------------------------------------------------------
+        e2_x <- e2_x + e2_vx,
+        SI e2_x <= 40 O e2_x >= ANCHO - 120 {
+            e2_vx <- 0 - e2_vx
+        },
+
+        SI laser1_activo == 1 {
+            SI colision_2d(laser1_x | laser1_y | 4 | 18 | e2_x | e2_y | 76 | 36) == 1 {
+                laser1_activo <- 0,
+                e2_vida <- e2_vida - 25,
+                puntos <- puntos + 25
+            }
+        },
+        SI laser2_activo == 1 {
+            SI colision_2d(laser2_x | laser2_y | 4 | 18 | e2_x | e2_y | 76 | 36) == 1 {
+                laser2_activo <- 0,
+                e2_vida <- e2_vida - 25,
+                puntos <- puntos + 25
+            }
+        },
+
+        SI e2_vida <= 0 {
+            exp_tiempo <- 18,
+            exp_x <- e2_x + 38,
+            exp_y <- e2_y + 18,
+            exp_radio <- 10,
+            puntos <- puntos + (350 * combo),
+            bajas <- bajas + 1,
+            combo <- combo + 1,
+            nivel <- 1 + (bajas / 5),
+            e2_vida_max <- 100 + (nivel * 25),
+            e2_vida <- e2_vida_max,
+            e2_x <- azar(80 | ANCHO - 150)
+        },
+
+        # Dibujar Crucero Acorazado y su barra de salud
+        dibujar_rect_2d(e2_x | e2_y | 76 | 32 | 190 | 40 | 220),
+        dibujar_rect_2d(e2_x + 14 | e2_y + 8 | 48 | 16 | 240 | 110 | 255),
+        dibujar_rect_2d(e2_x | e2_y - 10 | 76 | 5 | 45 | 45 | 60),
+        ENT VAR barra_e2 = (76 * e2_vida) / e2_vida_max,
+        SI barra_e2 > 0 {
+            dibujar_rect_2d(e2_x | e2_y - 10 | barra_e2 | 5 | 0 | 245 | 130)
+        },
+
+        # ----------------------------------------------------------------------
+        # ENEMIGO 3: Meteoro de Plasma
+        # ----------------------------------------------------------------------
+        met_x <- met_x + met_vx,
+        met_y <- met_y + met_vy + (nivel / 2),
+        SI met_x <= 30 O met_x >= ANCHO - 30 {
+            met_vx <- 0 - met_vx
+        },
+        SI met_y > ALTO - 35 {
+            met_y <- 80,
+            met_x <- azar(60 | ANCHO - 60),
+            puntos <- puntos + 15
+        },
+
+        # Dibujar Meteoro
+        dibujar_circulo_2d(met_x | met_y | met_radio | 255 | 145 | 35),
+        dibujar_circulo_2d(met_x - 4 | met_y - 4 | 8 | 255 | 215 | 90),
+
+        # ----------------------------------------------------------------------
+        # COLISIONES CONTRA LA NAVE DEL JUGADOR
+        # ----------------------------------------------------------------------
+        SI invulnerable == 0 {
+            ENT VAR golpe = 0,
+            SI colision_2d(jx | jy | jw | jh | e1_x | e1_y | 44 | 28) == 1 {
+                golpe <- 1,
+                e1_y <- 80,
+                e1_x <- azar(50 | ANCHO - 90)
+            },
+            SI colision_2d(jx | jy | jw | jh | met_x - met_radio | met_y - met_radio | 36 | 36) == 1 {
+                golpe <- 1,
+                met_y <- 80,
+                met_x <- azar(60 | ANCHO - 60)
+            },
+            SI golpe == 1 {
+                vidas <- vidas - 1,
+                combo <- 1,
+                invulnerable <- 45,
+                exp_tiempo <- 15,
+                exp_x <- jx + 24,
+                exp_y <- jy + 18,
+                exp_radio <- 8,
+                SI vidas <= 0 {
+                    SI puntos > record {
+                        record <- puntos
+                    },
+                    game_over <- 1
+                }
+            }
+        },
+
+        # ----------------------------------------------------------------------
+        # EFECTO DE EXPLOSION DE PARTICULAS
+        # ----------------------------------------------------------------------
+        SI exp_tiempo > 0 {
+            dibujar_circulo_2d(exp_x | exp_y | exp_radio | 255 | 200 | 50),
+            dibujar_circulo_2d(exp_x | exp_y | exp_radio / 2 | 255 | 255 | 220),
+            exp_radio <- exp_radio + 3,
+            exp_tiempo <- exp_tiempo - 1
+        },
+
+        # ----------------------------------------------------------------------
+        # DIBUJAR NAVE DEL JUGADOR
+        # ----------------------------------------------------------------------
+        SI invulnerable % 4 < 2 {
+            # Alas y fuselaje
+            dibujar_rect_2d(jx | jy + 14 | jw | 18 | 0 | 195 | 255),
+            dibujar_rect_2d(jx + 14 | jy | 20 | jh | 40 | 240 | 255),
+            dibujar_rect_2d(jx + 18 | jy + 6 | 12 | 12 | 220 | 255 | 255),
+            # Propulsores animados
+            ENT VAR llama = 6 + (cuadro % 8),
+            dibujar_rect_2d(jx + 10 | jy + jh | 8 | llama | 255 | 150 | 0),
+            dibujar_rect_2d(jx + jw - 18 | jy + jh | 8 | llama | 255 | 150 | 0)
+        }
+    },
+
+    # ==========================================================================
+    # HUD SUPERIOR Y BARRA DE ESTADO EN CODIGO TIGER PURO
+    # ==========================================================================
+    dibujar_rect_2d(0 | 0 | ANCHO | 62 | 14 | 20 | 40),
+    dibujar_linea_2d(0 | 62 | ANCHO | 62 | 2 | 0 | 210 | 255),
+
+    dibujar_texto_2d(18 | 8 | "TIGER STRIKE 2D [100% CODIGO TIGER PURO]" | 18 | 255 | 145 | 0),
+    dibujar_texto_2d(18 | 34 | "PUNTOS: " + puntos + "  |  NIVEL: " + nivel + "  |  COMBO: x" + combo + "  |  VIDAS: " + vidas | 15 | 0 | 240 | 255),
+
+    # Barra de Energia / Turbo
+    dibujar_texto_2d(590 | 12 | "TURBO [SHIFT]:" | 14 | 180 | 220 | 255),
+    dibujar_rect_2d(715 | 12 | 120 | 12 | 35 | 45 | 70),
+    SI escudo > 0 {
+        ENT VAR ancho_esc = (120 * escudo) / 100,
+        dibujar_rect_2d(715 | 12 | ancho_esc | 12 | 0 | 230 | 180)
+    },
+    dibujar_texto_2d(590 | 34 | "BAJAS: " + bajas | 14 | 255 | 215 | 80),
+
+    # Pie de controles
+    dibujar_rect_2d(0 | ALTO - 28 | ANCHO | 28 | 12 | 16 | 32),
+    dibujar_texto_2d(20 | ALTO - 22 | "[WASD / FLECHAS]: Mover  |  [SHIFT]: Turbo  |  [ESPACIO]: Laser Doble  |  [ESC]: Salir" | 14 | 170 | 190 | 225)
+}.
+
+IMPRIMIR "[OK] Sesion de Tiger Strike 2D finalizada. Puntos obtenidos: " + puntos.

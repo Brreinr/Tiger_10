@@ -1,10 +1,19 @@
 #include "tiger.h"
 
+static volatile bool g_env_parallel_mode = false;
+volatile bool g_tiger_parallel_active = false;
+
+void tiger_env_set_parallel_mode(bool active) {
+    g_env_parallel_mode = active;
+    g_tiger_parallel_active = active;
+}
+
 #ifdef _WIN32
 static CRITICAL_SECTION g_env_cs;
 static bool g_cs_init = false;
 
 static inline void env_lock(void) {
+    if (!g_env_parallel_mode) return;
     if (!g_cs_init) {
         InitializeCriticalSection(&g_env_cs);
         g_cs_init = true;
@@ -13,6 +22,7 @@ static inline void env_lock(void) {
 }
 
 static inline void env_unlock(void) {
+    if (!g_env_parallel_mode) return;
     LeaveCriticalSection(&g_env_cs);
 }
 #else
@@ -20,9 +30,52 @@ static inline void env_lock(void) {}
 static inline void env_unlock(void) {}
 #endif
 
+/* Pool de Cero-Latencia para TigerEnv y TigerVarEntry en llamadas recursivas y bucles */
+#define TIGER_ENV_POOL_MAX 128
+#define TIGER_ENTRY_POOL_MAX 512
+static TigerEnv* s_env_pool[TIGER_ENV_POOL_MAX];
+static int s_env_pool_count = 0;
+static TigerVarEntry* s_entry_pool[TIGER_ENTRY_POOL_MAX];
+static int s_entry_pool_count = 0;
+
+static inline TigerVarEntry* alloc_var_entry(const char* name) {
+    TigerVarEntry* e;
+    if (!g_env_parallel_mode && s_entry_pool_count > 0) {
+        e = s_entry_pool[--s_entry_pool_count];
+    } else {
+        e = (TigerVarEntry*)malloc(sizeof(TigerVarEntry));
+    }
+    size_t len = strlen(name);
+    if (len < sizeof(e->inline_name)) {
+        memcpy(e->inline_name, name, len + 1);
+        e->name = e->inline_name;
+    } else {
+        e->name = (char*)malloc(len + 1);
+        memcpy(e->name, name, len + 1);
+    }
+    return e;
+}
+
+static inline void free_var_entry(TigerVarEntry* e) {
+    if (e->name != e->inline_name) {
+        free(e->name);
+    }
+    tiger_val_free(&e->value);
+    if (!g_env_parallel_mode && s_entry_pool_count < TIGER_ENTRY_POOL_MAX) {
+        s_entry_pool[s_entry_pool_count++] = e;
+    } else {
+        free(e);
+    }
+}
+
 TigerEnv* tiger_env_new(TigerEnv* parent) {
-    TigerEnv* env = (TigerEnv*)malloc(sizeof(TigerEnv));
-    for (int i = 0; i < TIGER_ENV_BUCKETS; i++) env->buckets[i] = NULL;
+    TigerEnv* env;
+    if (!g_env_parallel_mode && s_env_pool_count > 0) {
+        env = s_env_pool[--s_env_pool_count];
+    } else {
+        env = (TigerEnv*)malloc(sizeof(TigerEnv));
+    }
+    memset(env->buckets, 0, sizeof(env->buckets));
     env->parent = parent;
     return env;
 }
@@ -33,13 +86,15 @@ void tiger_env_free(TigerEnv* env) {
         TigerVarEntry* e = env->buckets[i];
         while (e) {
             TigerVarEntry* next = e->next;
-            free(e->name);
-            tiger_val_free(&e->value);
-            free(e);
+            free_var_entry(e);
             e = next;
         }
     }
-    free(env);
+    if (!g_env_parallel_mode && s_env_pool_count < TIGER_ENV_POOL_MAX) {
+        s_env_pool[s_env_pool_count++] = env;
+    } else {
+        free(env);
+    }
 }
 
 bool tiger_env_set_fast(TigerEnv* env, const char* name, uint64_t hash, TigerValue val, bool is_const, TigerValType type_req) {
@@ -79,10 +134,7 @@ bool tiger_env_set_fast(TigerEnv* env, const char* name, uint64_t hash, TigerVal
         e = e->next;
     }
 
-    TigerVarEntry* new_entry = (TigerVarEntry*)malloc(sizeof(TigerVarEntry));
-    size_t len = strlen(name);
-    new_entry->name = (char*)malloc(len + 1);
-    memcpy(new_entry->name, name, len + 1);
+    TigerVarEntry* new_entry = alloc_var_entry(name);
     new_entry->hash = hash;
     new_entry->value = tiger_val_copy(val);
     new_entry->is_const = is_const;
@@ -144,26 +196,44 @@ bool tiger_env_assign(TigerEnv* env, const char* name, TigerValue val) {
     return tiger_env_assign_fast(env, name, tiger_hash64(name), val);
 }
 
+TigerVarEntry* tiger_env_lookup_entry(TigerEnv* env, const char* name, uint64_t hash) {
+    if (!env || !name) return NULL;
+    if (hash == 0) hash = tiger_hash64(name);
+    unsigned int idx = (unsigned int)(hash & TIGER_ENV_MASK);
+
+    TigerEnv* curr = env;
+    while (curr) {
+        TigerVarEntry* e = curr->buckets[idx];
+        while (e) {
+            if (e->hash == hash && strcmp(e->name, name) == 0) {
+                return e;
+            }
+            e = e->next;
+        }
+        curr = curr->parent;
+    }
+    return NULL;
+}
+
 bool tiger_env_get_fast(TigerEnv* env, const char* name, uint64_t hash, TigerValue* out_val) {
     if (!env || !name) return false;
     if (hash == 0) hash = tiger_hash64(name);
     unsigned int idx = (unsigned int)(hash & TIGER_ENV_MASK);
 
-    env_lock();
+    /* Lectura sin bloqueo: en PARALELO las variables externas son de solo lectura,
+       y cada hilo escribe en su propio entorno local. */
     TigerEnv* curr = env;
     while (curr) {
         TigerVarEntry* e = curr->buckets[idx];
         while (e) {
             if (e->hash == hash && strcmp(e->name, name) == 0) {
                 if (out_val) *out_val = tiger_val_copy(e->value);
-                env_unlock();
                 return true;
             }
             e = e->next;
         }
         curr = curr->parent;
     }
-    env_unlock();
     return false;
 }
 

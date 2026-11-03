@@ -1,0 +1,24 @@
+# Prueba de Hardware de Silicio Ultra-Rápido: CPU, GPU, NPU y BCI
+IMPRIMIR "=== TEST DE SILICIO TIGER 10.2 ===".
+
+# 1. CPU
+ENT VAR cores = cpu("CORES").
+IMPRIMIR "CPU Cores Detectados: " + cores.
+IMPRIMIR cpu("INFO").
+
+# 2. GPU
+IMPRIMIR gpu("INFO").
+
+# 3. NPU Tensor Engine
+IMPRIMIR npu("INFO").
+VAR v1 = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0].
+VAR v2 = [2.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0].
+VAR dot_res = npu("DOT" | v1 | v2).
+IMPRIMIR "NPU Vector Dot Product (AVX2): " + dot_res.
+
+# 4. BCI Neuro & Registros de Silicio
+bci_registro(0 | 42).
+ENT VAR reg0 = bci_registro(0).
+IMPRIMIR "BCI Registro RAX Leido: " + reg0.
+
+IMPRIMIR "=== TEST COMPLETADO CON EXITO ===".

@@ -1,0 +1,115 @@
+# ==============================================================================
+# DEMO APP: INTERFAZ MOVIL TIGER 10.2 (TIGER MOBILE DASHBOARD)
+# ==============================================================================
+# Disenada especificamente para pantallas tactiles y dispositivos Android:
+# - Barra de estado y panel superior (Notificaciones, Nivel de Bateria, Red 5G)
+# - Perfil de usuario y balance de creditos
+# - Menu de acciones rapidas (Escanear QR, Enviar, Recibir, BCI Link)
+# - Controles tactiles y bucle de eventos movil
+# ==============================================================================
+
+USAR EN MAS.
+
+# ------------------------------------------------------------------------------
+# 1. ESTADO DE LA INTERFAZ MOVIL
+# ------------------------------------------------------------------------------
+CAD VAR app_titulo = "Tiger Mobile OS".
+CAD VAR usuario_nombre = "Alex Tiger".
+ENT VAR bateria_nivel = 95.
+CAD VAR red_tipo = "5G ULTRA".
+ENT VAR saldo_creditos = 1250.
+ENT VAR notificaciones_pendientes = 3.
+
+# Dimensiones estandar de pantalla tactil movil
+ENT VAR pantalla_ancho = 1080.
+ENT VAR pantalla_alto = 2400.
+ENT VAR dpi = 480.
+
+# ------------------------------------------------------------------------------
+# 2. COMPONENTES Y VISTAS DE LA APP
+# ------------------------------------------------------------------------------
+BarraEstado {
+    CRE ENT visible = 1,
+    CRE CAD hora = "14:30",
+
+    FN renderizar() {
+        IMPRIMIR "--------------------------------------------------",
+        IMPRIMIR "[BARRA SUPERIOR]:", hora, "| RED:", red_tipo, "| BATERIA:", bateria_nivel,
+        RETORNAR 1
+    }
+}.
+
+TarjetaUsuario {
+    CRE CAD estado_seguridad = "BLINDADO_TCEL",
+
+    FN mostrar_perfil() {
+        IMPRIMIR "==================================================",
+        IMPRIMIR "  USUARIO ACTIVO: ", usuario_nombre,
+        IMPRIMIR "  SALDO EN CUENTA:", saldo_creditos, "TGR",
+        IMPRIMIR "  ESTADO NATIVO:  ", estado_seguridad,
+        IMPRIMIR "==================================================",
+        RETORNAR 1
+    }
+}.
+
+BotonTactil {
+    CRE CAD etiqueta = "Boton",
+    CRE ENT id_evento = 0,
+    CRE ENT presionado = 0,
+
+    FN configurar(CAD texto | ENT id) {
+        etiqueta <- texto,
+        id_evento <- id,
+        RETORNAR 1
+    },
+
+    FN tocar() {
+        presionado <- 1,
+        IMPRIMIR "[TOUCH EVENT]: Accion tactil registrada en:", etiqueta,
+        RETORNAR id_evento
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 3. CONTROLADOR PRINCIPAL DE LA APP MOVIL
+# ------------------------------------------------------------------------------
+InterfazMovilApp {
+    CRE ENT activa = 1,
+    CRE ENT cuadros = 0,
+
+    FN iniciar() {
+        IMPRIMIR "Iniciando contenedor Android NativeActivity...",
+        IMPRIMIR "Resolucion detectada:", pantalla_ancho, "x", pantalla_alto, "@", dpi, "DPI",
+        
+        VAR barra = BarraEstado().
+        barra-renderizar(),
+
+        VAR tarjeta = TarjetaUsuario().
+        tarjeta-mostrar_perfil(),
+
+        VAR btn_escanear = BotonTactil().
+        btn_escanear-configurar("ESCANEAR QR" | 101),
+
+        VAR btn_enviar = BotonTactil().
+        btn_enviar-configurar("TRANSFERENCIA RAPIDA" | 102),
+
+        VAR btn_bci = BotonTactil().
+        btn_bci-configurar("CONEXION SENSOR BCI" | 103),
+
+        # Simulacion de toque de usuario en pantalla
+        btn_escanear-tocar(),
+        btn_bci-tocar(),
+
+        IMPRIMIR "--------------------------------------------------",
+        IMPRIMIR "[Tiger Android]: Interfaz movil lista e interactiva.",
+        IMPRIMIR "--------------------------------------------------",
+        RETORNAR 1
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# PUNTO DE ENTRADA NATIVO
+# ------------------------------------------------------------------------------
+VAR app = InterfazMovilApp().
+ENT VAR resultado = app-iniciar().
+IMPRIMIR "Estado de salida de la aplicacion movil:", resultado.

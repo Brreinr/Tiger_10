@@ -831,7 +831,7 @@ typedef DWORD LCID;
 
 #ifdef _AMD64_
 
-#if defined(__x86_64) && !defined(RC_INVOKED)
+#if defined(__x86_64) && !defined(RC_INVOKED) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__) && !defined(__clang__)
 
 #ifdef __cplusplus
   extern "C" {
@@ -2021,7 +2021,7 @@ typedef DWORD LCID;
 
   typedef struct _KNONVOLATILE_CONTEXT_POINTERS
   {
-    PM128A FloatingContext[16];
+    PVOID FloatingContext[16];
     PULONG64 IntegerContext[16];
   } KNONVOLATILE_CONTEXT_POINTERS, *PKNONVOLATILE_CONTEXT_POINTERS;
 #endif /* defined(__x86_64) */

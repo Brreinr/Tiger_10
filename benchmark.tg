@@ -1,0 +1,100 @@
+#==============================================================================
+# BENCHMARK TIGER: mide los puntos calientes del interprete
+# Uso: tiger benchmark.tg
+# ==============================================================================
+
+FN sumar(ENT a | ENT b) {
+    RETORNAR a + b
+}.
+
+FN fib(ENT n) {
+    SI n < 2 {
+        RETORNAR n
+    }.
+    RETORNAR fib(n - 1) + fib(n - 2)
+}.
+
+IMPRIMIR "=== BENCHMARK TIGER ===".
+
+# 1. Bucle entero puro (fast-path de MIENTRAS + var op literal)
+FLOT VAR t0 = obtener_tiempo_ms().
+ENT VAR i = 0.
+ENT VAR acc = 0.
+MIENTRAS i < 1000000 {
+    acc <- acc + i.
+    i += 1.
+}.
+FLOT VAR t1 = obtener_tiempo_ms().
+IMPRIMIR "[1] Bucle 1M iteraciones (ms):", t1 - t0.
+
+# 2. Aritmetica var op var
+t0 <- obtener_tiempo_ms().
+i <- 0.
+ENT VAR x = 7.
+ENT VAR y = 3.
+ENT VAR r = 0.
+MIENTRAS i < 500000 {
+    r <- x * y.
+    r <- r + x.
+    r <- r % y.
+    i += 1.
+}.
+t1 <- obtener_tiempo_ms().
+IMPRIMIR "[2] Aritmetica var-var 500K (ms):", t1 - t0.
+
+# 3. Llamadas a funciones de usuario
+t0 <- obtener_tiempo_ms().
+i <- 0.
+acc <- 0.
+MIENTRAS i < 200000 {
+    acc <- sumar(acc | 1).
+    i += 1.
+}.
+t1 <- obtener_tiempo_ms().
+IMPRIMIR "[3] Llamadas a funcion 200K (ms):", t1 - t0.
+
+# 4. Recursion
+t0 <- obtener_tiempo_ms().
+ENT VAR f = fib(22).
+t1 <- obtener_tiempo_ms().
+IMPRIMIR "[4] fib(22) =", f.
+IMPRIMIR "[4] Recursion fib(22) (ms):", t1 - t0.
+
+# 5. Textos (copias y concatenacion)
+t0 <- obtener_tiempo_ms().
+i <- 0.
+CAD VAR s = "tiger".
+CAD VAR s2 = "".
+MIENTRAS i < 100000 {
+    s2 <- s.
+    s2 <- s + "!".
+    i += 1.
+}.
+t1 <- obtener_tiempo_ms().
+IMPRIMIR "[5] Textos 100K (ms):", t1 - t0.
+
+# 6. Acceso a diccionario
+t0 <- obtener_tiempo_ms().
+i <- 0.
+VAR d = { ancho: 10, alto: 20 }.
+acc <- 0.
+MIENTRAS i < 100000 {
+    acc <- acc + d.ancho.
+    i += 1.
+}.
+t1 <- obtener_tiempo_ms().
+IMPRIMIR "[6] Acceso a diccionario 100K (ms):", t1 - t0.
+
+# 7. Bucle PARALELO en los 8 subprocesadores (1M iteraciones con reduccion sin bloqueos)
+t0 <- obtener_tiempo_ms().
+i <- 0.
+acc <- 0.
+MIENTRAS PARALELO i < 1000000 {
+    acc <- acc + i.
+    i += 1.
+}.
+t1 <- obtener_tiempo_ms().
+IMPRIMIR "[7] Bucle PARALELO 8-Subprocesadores 1M (ms):", t1 - t0, "| Suma =", acc.
+
+IMPRIMIR "=== FIN ===".
+

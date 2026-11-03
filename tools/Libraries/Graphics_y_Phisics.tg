@@ -1,0 +1,402 @@
+USAR EN ASM Y WAT.
+
+# ==============================================================================
+# LIBRERIA UNIVERSAL DE DESARROLLO DE VIDEOJUEGOS 2D Y 3D - TIGER 10.1
+# ==============================================================================
+# Proporciona parametros, clases y enlace en C para:
+# - Creacion y administracion de ventanas graficas nativas de alto rendimiento.
+# - Motor 2D: Sprites, colisiones AABB, camara 2D, bufer de dibujo y particulas.
+# - Motor 3D: Vectores 3D (X, Y, Z), camara con proyeccion en perspectiva,
+#   transformaciones matriciales, rotacion espacial y renderizado de mallas/cubos.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. PARAMETROS GLOBALES DE CONFIGURACION DE VENTANA Y MOTOR
+# ------------------------------------------------------------------------------
+ENT VAR JUEGO_ANCHO_DEFECTO = 800.
+ENT VAR JUEGO_ALTO_DEFECTO = 600.
+ENT VAR JUEGO_FPS_DEFECTO = 60.
+CAD VAR JUEGO_TITULO_DEFECTO = "Tiger 10.1 Game Engine (2D/3D)".
+
+# ------------------------------------------------------------------------------
+# 2. CLASE VENTANA DE JUEGO (GAME WINDOW)
+# ------------------------------------------------------------------------------
+VentanaJuego {
+    CRE ENT ancho = 800,
+    CRE ENT alto = 600,
+    CRE CAD titulo = "Tiger Game Window",
+    CRE ENT fps_objetivo = 60,
+    CRE ENT pantalla_completa = 0,
+    CRE ENT vsync = 1,
+    CRE ENT activa = 0,
+
+    FN configurar(ENT w | ENT h | CAD tit | ENT fps) {
+        ancho <- w,
+        alto <- h,
+        titulo <- tit,
+        fps_objetivo <- fps,
+        activa <- 1,
+        IMPRIMIR "[Ventana] Parametros configurados exitosamente:",
+        IMPRIMIR titulo,
+        RETORNAR 1
+    },
+
+    FN redimensionar(ENT nuevo_w | ENT nuevo_h) {
+        ancho <- nuevo_w,
+        alto <- nuevo_h,
+        RETORNAR ancho
+    },
+
+    FN abrir_2d() {
+        activa <- 1,
+        RETORNAR crear_entorno_2d(titulo | ancho | alto | fps_objetivo)
+    },
+
+    FN abrir_3d() {
+        activa <- 1,
+        RETORNAR crear_entorno_3d(titulo | ancho | alto | fps_objetivo)
+    },
+
+    FN cerrar() {
+        activa <- 0,
+        IMPRIMIR "[Ventana] Ventana cerrada correctamente.",
+        RETORNAR 0
+    }
+}.
+
+# Alias en ingles para compatibilidad bilingue
+GameWindow {
+    CRE ENT width = 800,
+    CRE ENT height = 600,
+    CRE CAD title = "Tiger Game Window",
+    CRE ENT running = 1,
+
+    FN close() {
+        running <- 0,
+        RETORNAR 0
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 3. MOTOR DEL BUCLE DE JUEGO (GAME LOOP Y TIEMPO DELTA)
+# ------------------------------------------------------------------------------
+MotorJuego {
+    CRE ENT fps = 60,
+    CRE ENT cuadros_totales = 0,
+    CRE ENT corriendo = 1,
+    CRE ENT delta_ms = 16,
+
+    FN configurar(ENT objetivo_fps) {
+        fps <- objetivo_fps,
+        cuadros_totales <- 0,
+        corriendo <- 1,
+        delta_ms <- 1000 / objetivo_fps,
+        IMPRIMIR "[MotorJuego] Configurado a FPS:",
+        IMPRIMIR fps,
+        RETORNAR 1
+    },
+
+    FN actualizar() {
+        cuadros_totales <- cuadros_totales + 1,
+        RETORNAR cuadros_totales
+    },
+
+    FN detener() {
+        corriendo <- 0,
+        IMPRIMIR "[MotorJuego] Bucle detenido.",
+        RETORNAR 0
+    }
+}.
+
+GameEngine {
+    CRE ENT fps = 60,
+    CRE ENT running = 1,
+
+    FN tick() {
+        RETORNAR 1
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 4. MOTOR Y ENTIDADES 2D (SPRITES, FISICAS, COLISIONES)
+# ------------------------------------------------------------------------------
+Entidad2D {
+    CRE ENT pos_x = 0,
+    CRE ENT pos_y = 0,
+    CRE ENT ancho = 32,
+    CRE ENT alto = 32,
+    CRE ENT velocidad = 5,
+    CRE ENT vida = 100,
+    CRE ENT activa = 1,
+
+    FN iniciar(ENT px | ENT py | ENT w | ENT h) {
+        pos_x <- px,
+        pos_y <- py,
+        ancho <- w,
+        alto <- h,
+        vida <- 100,
+        activa <- 1,
+        RETORNAR 1
+    },
+
+    FN mover(ENT dx | ENT dy) {
+        pos_x <- pos_x + (dx * velocidad),
+        pos_y <- pos_y + (dy * velocidad),
+        RETORNAR pos_x
+    },
+
+    FN recibir_danio(ENT cantidad) {
+        vida <- vida - cantidad,
+        SI vida <= 0 {
+            vida <- 0,
+            activa <- 0,
+            IMPRIMIR "[2D] Entidad derrotada.",
+            RETORNAR 0
+        },
+        RETORNAR vida
+    }
+}.
+
+# Alias en ingles
+Entity2D {
+    CRE ENT x = 0,
+    CRE ENT y = 0,
+    CRE ENT health = 100,
+
+    FN take_damage(ENT amount) {
+        health <- health - amount,
+        RETORNAR health
+    }
+}.
+
+# Camara 2D
+Camara2D {
+    CRE ENT centro_x = 400,
+    CRE ENT centro_y = 300,
+    CRE ENT zoom = 1,
+    CRE ENT rotacion = 0,
+
+    FN seguir(ENT target_x | ENT target_y) {
+        centro_x <- target_x,
+        centro_y <- target_y,
+        RETORNAR centro_x
+    }
+}.
+
+# Sistema de Colisiones AABB
+CajaColision2D {
+    CRE ENT c_x = 0,
+    CRE ENT c_y = 0,
+    CRE ENT ancho = 32,
+    CRE ENT alto = 32,
+
+    FN posicionar(ENT px | ENT py | ENT w | ENT h) {
+        c_x <- px,
+        c_y <- py,
+        ancho <- w,
+        alto <- h,
+        RETORNAR 1
+    },
+
+    FN colisiona_con(ENT otro_x | ENT otro_y | ENT otro_w | ENT otro_h) {
+        SI c_x < otro_x + otro_w {
+            SI c_x + ancho > otro_x {
+                SI c_y < otro_y + otro_h {
+                    SI c_y + alto > otro_y {
+                        RETORNAR 1
+                    }
+                }
+            }
+        },
+        RETORNAR 0
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 5. MOTOR Y MATEMATICAS 3D (VECTORES, CAMARA EN PERSPECTIVA Y MALLAS)
+# ------------------------------------------------------------------------------
+
+# Vector Tridimensional (X, Y, Z)
+Vector3D {
+    CRE ENT x = 0,
+    CRE ENT y = 0,
+    CRE ENT z = 0,
+
+    FN fijar(ENT px | ENT py | ENT pz) {
+        x <- px,
+        y <- py,
+        z <- pz,
+        RETORNAR 1
+    },
+
+    FN sumar(ENT dx | ENT dy | ENT dz) {
+        x <- x + dx,
+        y <- y + dy,
+        z <- z + dz,
+        RETORNAR x
+    }
+}.
+
+# Alias en ingles
+Vec3 {
+    CRE ENT x = 0,
+    CRE ENT y = 0,
+    CRE ENT z = 0,
+
+    FN set(ENT px | ENT py | ENT pz) {
+        x <- px,
+        y <- py,
+        z <- pz,
+        RETORNAR 1
+    }
+}.
+
+# Camara 3D con Proyeccion en Perspectiva
+Camara3D {
+    CRE ENT pos_x = 0,
+    CRE ENT pos_y = 0,
+    CRE ENT pos_z = -400,
+    CRE ENT fov = 60,
+    CRE ENT distancia_focal = 350,
+    CRE ENT plano_cerca = 1,
+    CRE ENT plano_lejos = 2000,
+
+    FN configurar(ENT px | ENT py | ENT pz | ENT focal) {
+        pos_x <- px,
+        pos_y <- py,
+        pos_z <- pz,
+        distancia_focal <- focal,
+        IMPRIMIR "[Camara3D] Optica configurada. Focal:",
+        IMPRIMIR distancia_focal,
+        RETORNAR 1
+    },
+
+    # Formula de Proyeccion en Perspectiva: X_pantalla = (X * Focal / Z) + (Ancho / 2)
+    FN proyectar_x(ENT x3d | ENT z3d | ENT mitad_pantalla_w) {
+        ENT VAR z_ajustada = z3d - pos_z,
+        SI z_ajustada <= 0 {
+            z_ajustada <- 1
+        },
+        ENT VAR res_x = (x3d * distancia_focal) / z_ajustada,
+        RETORNAR res_x + mitad_pantalla_w
+    },
+
+    # Formula de Proyeccion en Perspectiva: Y_pantalla = (Y * Focal / Z) + (Alto / 2)
+    FN proyectar_y(ENT y3d | ENT z3d | ENT mitad_pantalla_h) {
+        ENT VAR z_ajustada = z3d - pos_z,
+        SI z_ajustada <= 0 {
+            z_ajustada <- 1
+        },
+        ENT VAR res_y = (y3d * distancia_focal) / z_ajustada,
+        RETORNAR res_y + mitad_pantalla_h
+    }
+}.
+
+# Molde de Cubo o Malla 3D
+Cubo3D {
+    CRE ENT centro_x = 0,
+    CRE ENT centro_y = 0,
+    CRE ENT centro_z = 200,
+    CRE ENT tamano = 80,
+    CRE ENT rot_x = 0,
+    CRE ENT rot_y = 0,
+    CRE ENT rot_z = 0,
+
+    FN transformar(ENT px | ENT py | ENT pz | ENT tam) {
+        centro_x <- px,
+        centro_y <- py,
+        centro_z <- pz,
+        tamano <- tam,
+        RETORNAR 1
+    },
+
+    FN rotar(ENT rx | ENT ry | ENT rz) {
+        rot_x <- rot_x + rx,
+        rot_y <- rot_y + ry,
+        rot_z <- rot_z + rz,
+        RETORNAR rot_y
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 6. ENTRADA DE USUARIO Y AUDIO
+# ------------------------------------------------------------------------------
+EntradaTeclado {
+    CRE ENT tecla_arriba = 38,
+    CRE ENT tecla_abajo = 40,
+    CRE ENT tecla_izquierda = 37,
+    CRE ENT tecla_derecha = 39,
+    CRE ENT tecla_espacio = 32,
+    CRE ENT tecla_escape = 27,
+
+    FN obtener_codigo(CAD nombre_tecla) {
+        SI nombre_tecla == "ESPACIO" {
+            RETORNAR 32
+        },
+        SI nombre_tecla == "ESCAPE" {
+            RETORNAR 27
+        },
+        RETORNAR 0
+    }
+}.
+
+AudioJuego {
+    CRE ENT volumen = 100,
+    CRE ENT mute = 0,
+
+    FN reproducir(CAD pista) {
+        SI mute == 0 {
+            IMPRIMIR "[Audio] Reproduciendo:",
+            IMPRIMIR pista,
+            RETORNAR 1
+        },
+        RETORNAR 0
+    }
+}.
+
+# ------------------------------------------------------------------------------
+# 7. UTILIDADES MATEMATICAS Y DE COLISION 2D EN CODIGO TIGER PURO
+# ------------------------------------------------------------------------------
+FN colision_2d(ENT ax | ENT ay | ENT aw | ENT ah | ENT bx | ENT by | ENT bw | ENT bh) {
+    SI ax < bx + bw {
+        SI ax + aw > bx {
+            SI ay < by + bh {
+                SI ay + ah > by {
+                    RETORNAR 1
+                }
+            }
+        }
+    },
+    RETORNAR 0
+}.
+
+FN limitar_valor(ENT v | ENT minimo | ENT maximo) {
+    SI v < minimo {
+        RETORNAR minimo
+    },
+    SI v > maximo {
+        RETORNAR maximo
+    },
+    RETORNAR v
+}.
+
+# ------------------------------------------------------------------------------
+# 8. FUNCIONES DE CONVENIENCIA PARA EL DESARROLLADOR
+#    Ejecutan directamente los motores graficos nativos 2D y 3D en Tiger puro
+# ------------------------------------------------------------------------------
+FN iniciar_juego_2d(ENT ancho | ENT alto | CAD titulo) {
+    IMPRIMIR "==================================================================",
+    IMPRIMIR "  INICIANDO MOTOR GRAFICO 2D NATIVO (2 MAESTROS / 8 SUBPROCESADORES)",
+    IMPRIMIR "==================================================================",
+    IMPRIMIR titulo,
+    RETORNAR crear_entorno_2d(titulo | ancho | alto | 60)
+}.
+
+FN iniciar_juego_3d(ENT ancho | ENT alto | CAD titulo) {
+    IMPRIMIR "==================================================================",
+    IMPRIMIR "  INICIANDO MOTOR GRAFICO 3D NATIVO (2 MAESTROS / 8 SUBPROCESADORES)",
+    IMPRIMIR "==================================================================",
+    IMPRIMIR titulo,
+    RETORNAR crear_entorno_3d(titulo | ancho | alto | 60)
+}.
+

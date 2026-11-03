@@ -32,6 +32,12 @@ TigerValue tiger_val_array_new(void) {
     return v;
 }
 
+void tiger_array_reserve(TigerArray* arr, size_t capacity) {
+    if (!arr || capacity <= arr->capacity) return;
+    arr->items = (TigerValue*)realloc(arr->items, capacity * sizeof(TigerValue));
+    arr->capacity = capacity;
+}
+
 void tiger_array_push(TigerArray* arr, TigerValue val) {
     if (arr->count >= arr->capacity) {
         size_t new_cap = arr->capacity == 0 ? 8 : arr->capacity * 2;
@@ -114,7 +120,7 @@ void tiger_val_free(TigerValue* v) {
             }
             break;
         case VAL_ARRAY:
-            if (v->as.arr_val && --v->as.arr_val->ref_count <= 0) {
+            if (v->as.arr_val && tiger_rc_dec(&v->as.arr_val->ref_count) <= 0) {
                 for (size_t i = 0; i < v->as.arr_val->count; i++) {
                     tiger_val_free(&v->as.arr_val->items[i]);
                 }
@@ -124,7 +130,7 @@ void tiger_val_free(TigerValue* v) {
             }
             break;
         case VAL_DICT:
-            if (v->as.dict_val && --v->as.dict_val->ref_count <= 0) {
+            if (v->as.dict_val && tiger_rc_dec(&v->as.dict_val->ref_count) <= 0) {
                 for (int i = 0; i < TIGER_DICT_BUCKETS; i++) {
                     TigerDictEntry* e = v->as.dict_val->buckets[i];
                     while (e) {
@@ -140,7 +146,7 @@ void tiger_val_free(TigerValue* v) {
             }
             break;
         case VAL_INSTANCE:
-            if (v->as.inst_val && --v->as.inst_val->ref_count <= 0) {
+            if (v->as.inst_val && tiger_rc_dec(&v->as.inst_val->ref_count) <= 0) {
                 free(v->as.inst_val->class_name);
                 TigerValue d; d.type = VAL_DICT; d.as.dict_val = v->as.inst_val->fields;
                 tiger_val_free(&d);
@@ -161,13 +167,13 @@ TigerValue tiger_val_copy(TigerValue v) {
             copy = tiger_val_str(v.as.s_val);
             break;
         case VAL_ARRAY:
-            if (copy.as.arr_val) copy.as.arr_val->ref_count++;
+            if (copy.as.arr_val) tiger_rc_inc(&copy.as.arr_val->ref_count);
             break;
         case VAL_DICT:
-            if (copy.as.dict_val) copy.as.dict_val->ref_count++;
+            if (copy.as.dict_val) tiger_rc_inc(&copy.as.dict_val->ref_count);
             break;
         case VAL_INSTANCE:
-            if (copy.as.inst_val) copy.as.inst_val->ref_count++;
+            if (copy.as.inst_val) tiger_rc_inc(&copy.as.inst_val->ref_count);
             break;
         default:
             break;
@@ -186,6 +192,82 @@ bool tiger_val_is_truthy(TigerValue v) {
         case VAL_ARRAY: return v.as.arr_val && v.as.arr_val->count > 0;
         case VAL_DICT: return v.as.dict_val && v.as.dict_val->count > 0;
         default: return true;
+    }
+}
+
+/* ========================================================================= */
+/* BUFFER DE SALIDA ULTRA-RÁPIDO EN SILICIO (ZERO-ALLOC I/O)                 */
+/* ========================================================================= */
+
+#define TIGER_STDOUT_BUF_SIZE (64 * 1024)
+static char g_fast_stdout_buf[TIGER_STDOUT_BUF_SIZE];
+static size_t g_fast_stdout_len = 0;
+
+void tiger_io_flush_fast(void) {
+    if (g_fast_stdout_len > 0) {
+#ifdef _WIN32
+        HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+        if (hOut && hOut != INVALID_HANDLE_VALUE) {
+            DWORD written = 0;
+            WriteFile(hOut, g_fast_stdout_buf, (DWORD)g_fast_stdout_len, &written, NULL);
+        } else {
+            fwrite(g_fast_stdout_buf, 1, g_fast_stdout_len, stdout);
+        }
+#else
+        fwrite(g_fast_stdout_buf, 1, g_fast_stdout_len, stdout);
+#endif
+        g_fast_stdout_len = 0;
+    }
+}
+
+static inline void tiger_io_write_fast(const char* s, size_t len) {
+    if (!s || len == 0) return;
+    if (g_fast_stdout_len + len >= TIGER_STDOUT_BUF_SIZE) {
+        tiger_io_flush_fast();
+        if (len >= TIGER_STDOUT_BUF_SIZE) {
+#ifdef _WIN32
+            HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+            if (hOut && hOut != INVALID_HANDLE_VALUE) {
+                DWORD written = 0;
+                WriteFile(hOut, s, (DWORD)len, &written, NULL);
+                return;
+            }
+#endif
+            fwrite(s, 1, len, stdout);
+            return;
+        }
+    }
+    memcpy(g_fast_stdout_buf + g_fast_stdout_len, s, len);
+    g_fast_stdout_len += len;
+}
+
+size_t tiger_val_format_buf(TigerValue v, char* dst, size_t max_size) {
+    if (!dst || max_size == 0) return 0;
+    switch (v.type) {
+        case VAL_NIL:
+            return snprintf(dst, max_size, "NULO");
+        case VAL_BOOL:
+            return snprintf(dst, max_size, "%s", v.as.b_val ? "VERDADERO" : "FALSO");
+        case VAL_INT:
+            return snprintf(dst, max_size, "%lld", (long long)v.as.i_val);
+        case VAL_FLOAT:
+            return snprintf(dst, max_size, "%g", v.as.f_val);
+        case VAL_STR:
+            if (!v.as.s_val) return 0;
+            return snprintf(dst, max_size, "%s", v.as.s_val);
+        case VAL_PTR:
+            return snprintf(dst, max_size, "<puntero %p>", v.as.ptr_val);
+        case VAL_ARRAY:
+            return snprintf(dst, max_size, "<arreglo>");
+        case VAL_DICT:
+            return snprintf(dst, max_size, "<diccionario>");
+        case VAL_INSTANCE:
+            return snprintf(dst, max_size, "<instancia %s>", v.as.inst_val ? v.as.inst_val->class_name : "");
+        case VAL_CFUNC:
+            return snprintf(dst, max_size, "<funcion_c_nativa>");
+        default:
+            dst[0] = '\0';
+            return 0;
     }
 }
 
@@ -220,12 +302,29 @@ char* tiger_val_to_string(TigerValue v) {
     }
 }
 
+static volatile long g_print_lock = 0;
+
 void tiger_val_print(TigerValue v, bool newline) {
-    char* s = tiger_val_to_string(v);
-    fputs(s, stdout);
-    if (newline) putchar('\n');
-    fflush(stdout);
-    free(s);
+    bool locked = g_tiger_parallel_active;
+    if (locked) {
+        while (__atomic_exchange_n(&g_print_lock, 1, __ATOMIC_ACQUIRE)) { }
+    }
+    if (v.type == VAL_STR) {
+        if (v.as.s_val && v.as.s_val[0]) {
+            tiger_io_write_fast(v.as.s_val, strlen(v.as.s_val));
+        }
+    } else {
+        char fast_buf[256];
+        size_t len = tiger_val_format_buf(v, fast_buf, sizeof(fast_buf));
+        if (len >= sizeof(fast_buf)) len = sizeof(fast_buf) - 1;
+        tiger_io_write_fast(fast_buf, len);
+    }
+    if (newline) {
+        tiger_io_write_fast("\n", 1);
+    }
+    if (locked) {
+        __atomic_store_n(&g_print_lock, 0, __ATOMIC_RELEASE);
+    }
 }
 
 bool tiger_val_equals(TigerValue a, TigerValue b) {

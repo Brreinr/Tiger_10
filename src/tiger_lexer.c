@@ -239,8 +239,6 @@ static void init_keyword_jump_table(void) {
     register_kw_jump("PROPERTY", TOK_CRE);
     register_kw_jump("PROPIEDAD", TOK_CRE);
     register_kw_jump("ATTR", TOK_CRE);
-    register_kw_jump("METODO", TOK_METODO);
-    register_kw_jump("METHOD", TOK_METODO);
 
     /* 8. Tipos de Datos Bilingües */
     register_kw_jump("ENT", TOK_KW_ENT);

@@ -78,7 +78,8 @@ typedef enum {
     STMT_POLYGLOT,
     STMT_BLOCK,
     STMT_MACRO,
-    STMT_ASSISTANT
+    STMT_ASSISTANT,
+    STMT_HW_TARGET
 } StmtType;
 
 typedef struct TigerStmt TigerStmt;
@@ -132,6 +133,7 @@ struct TigerStmt {
             TigerExpr* condition;
             TigerStmt** body;
             size_t body_count;
+            bool is_parallel;
         } while_stmt;
         struct {
             TigerExpr* expr;
@@ -169,6 +171,11 @@ struct TigerStmt {
             char* prompt;
             char* target_var;
         } assistant;
+        struct {
+            int target; /* TigerHardwareTarget: CPU, GPU, NPU, MAS, AUTO */
+            TigerStmt** body;
+            size_t body_count;
+        } hw_target;
     } as;
 };
 
@@ -197,6 +204,7 @@ TigerStmt* tiger_stmt_polyglot(const char* lang, const char* code, const char* t
 TigerStmt* tiger_stmt_use(const char* path, bool is_c, int line);
 TigerStmt* tiger_stmt_macro(const char* name, const char* param, TigerExpr* body_expr, int line);
 TigerStmt* tiger_stmt_assistant(const char* api_key, const char* model, const char* prompt, const char* target_var, int line);
+TigerStmt* tiger_stmt_hw_target(int target, TigerStmt** body, size_t count, int line);
 void tiger_stmt_free(TigerStmt* stmt);
 
 #endif /* TIGER_AST_H */

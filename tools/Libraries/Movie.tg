@@ -1,0 +1,95 @@
+USAR EN ASM Y WAT.
+
+# ======================================================================
+# Movie: carga de imagenes y reproduccion de audio/video en Windows.
+# Las URL HTTP/HTTPS pueden venir de cualquier dominio accesible; no hay una
+# lista fija de hosts. El recurso remoto se descarga a un archivo local antes
+# de decodificarlo o reproducirlo.
+# Imagenes: GDI+ (PNG, JPEG, BMP, GIF, TIFF y formatos instalados).
+# Audio/video: formatos y codecs disponibles en Windows mediante MCI.
+# FBX se muestra mediante el visor WebGL incluido, que usa Three.js FBXLoader;
+# el render se ejecuta en el navegador, no en el visor nativo basico de Tiger.
+# ======================================================================
+
+# Devuelve un identificador positivo; 0 indica que no se pudo cargar.
+FN imagen_cargar(CAD ruta) {
+    RETORNAR movie_imagen_cargar(ruta)
+}.
+
+# Dibuja la imagen en el lienzo Tiger 2D. ancho/alto <= 0 usa el tamano original.
+FN imagen_mostrar(ENT id | ENT x | ENT y | ENT ancho | ENT alto) {
+    RETORNAR movie_imagen_dibujar(id | x | y | ancho | alto)
+}.
+
+FN imagen_mostrar_original(ENT id | ENT x | ENT y) {
+    RETORNAR movie_imagen_dibujar(id | x | y | 0 | 0)
+}.
+
+FN imagen_ancho(ENT id) { RETORNAR movie_imagen_ancho(id) }.
+FN imagen_alto(ENT id) { RETORNAR movie_imagen_alto(id) }.
+FN imagen_cerrar(ENT id) { RETORNAR movie_imagen_cerrar(id) }.
+
+# Abre un medio. Se mantiene un solo audio/video abierto a la vez.
+FN media_descargar(CAD url | CAD destino) {
+    RETORNAR movie_descargar(url | destino)
+}.
+
+# Atajos de red: descargan desde cualquier URL HTTP/HTTPS y abren el archivo.
+# Devuelven id > 0 (imagen) o 1 (audio/video); 0 indica fallo.
+FN imagen_url_cargar(CAD url | CAD destino) {
+    ENT VAR bytes = media_descargar(url | destino),
+    SI bytes > 0 { RETORNAR imagen_cargar(destino) }
+    RETORNAR 0
+}.
+
+FN audio_abrir(CAD ruta) { RETORNAR movie_audio_abrir(ruta) }.
+FN video_abrir(CAD ruta) { RETORNAR movie_video_abrir(ruta) }.
+FN audio_url_abrir(CAD url | CAD destino) {
+    ENT VAR bytes = media_descargar(url | destino),
+    SI bytes > 0 { RETORNAR audio_abrir(destino) }
+    RETORNAR 0
+}.
+FN video_url_abrir(CAD url | CAD destino) {
+    ENT VAR bytes = media_descargar(url | destino),
+    SI bytes > 0 { RETORNAR video_abrir(destino) }
+    RETORNAR 0
+}.
+FN media_reproducir() { RETORNAR movie_media_reproducir() }.
+FN media_repetir() { RETORNAR movie_media_repetir() }.
+FN media_pausar() { RETORNAR movie_media_pausar() }.
+FN media_reanudar() { RETORNAR movie_media_reanudar() }.
+FN media_detener() { RETORNAR movie_media_detener() }.
+FN media_cerrar() { RETORNAR movie_media_cerrar() }.
+
+# Estado: 0 detenido/cerrado, 1 reproduciendo, 2 pausado.
+FN media_estado() { RETORNAR movie_media_estado() }.
+FN media_duracion_ms() { RETORNAR movie_media_duracion_ms() }.
+FN media_posicion_ms() { RETORNAR movie_media_posicion_ms() }.
+FN media_error() { RETORNAR movie_media_error() }.
+
+# Primitivas para construir interfaces de medios usando la ventana 2D Tiger.
+FN interfaz_2d_abrir(CAD titulo | ENT ancho | ENT alto | ENT fps) {
+    RETORNAR ventana_2d_abrir(titulo | ancho | alto | fps)
+}.
+FN interfaz_actualizar() { RETORNAR ventana_2d_actualizar() }.
+FN interfaz_limpiar(ENT rojo | ENT verde | ENT azul) {
+    RETORNAR limpiar_2d(rojo | verde | azul)
+}.
+FN interfaz_texto(ENT x | ENT y | CAD texto | ENT tamano | ENT rojo | ENT verde | ENT azul) {
+    RETORNAR dibujar_texto_2d(x | y | texto | tamano | rojo | verde | azul)
+}.
+FN interfaz_imagen(ENT id | ENT x | ENT y | ENT ancho | ENT alto) {
+    RETORNAR imagen_mostrar(id | x | y | ancho | alto)
+}.
+
+# Visor FBX interactivo. Abre el visor WebGL en el navegador predeterminado;
+# el usuario puede elegir el FBX y su carpeta de texturas o indicar una URL.
+FN fbx_visor_abrir() { RETORNAR movie_fbx_visor_abrir() }.
+
+# Ejemplo:
+# USAR "tools/Libraries/TigerUIX.tg".
+# USAR "tools/Libraries/movie.tg".
+# abrir_lienzo_2d("Visor" | 800 | 600 | 60),
+# ENT VAR foto = imagen_cargar("media/foto.png"),
+# imagen_mostrar_original(foto | 20 | 20),
+# audio_abrir("media/musica.wav"), media_reproducir().

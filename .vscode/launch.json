@@ -66,8 +66,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/User/OneDrive/Documentos/Tiger",
-      "program": "c:/Users/User/OneDrive/Documentos/Tiger/build/Debug/outDebug",
+      "cwd": "c:/Users/User/.gemini/antigravity/worktrees/Tiger/explain_test_files_purpose",
+      "program": "c:/Users/User/.gemini/antigravity/worktrees/Tiger/explain_test_files_purpose/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
