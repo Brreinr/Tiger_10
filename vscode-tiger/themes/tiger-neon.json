@@ -1,62 +1,129 @@
 {
   "$schema": "vscode://schemas/color-theme",
-  "name": "Tiger Neon (Cyber Orange)",
+  "name": "Tiger Ember (Orange)",
   "type": "dark",
   "colors": {
-    "editor.background": "#0B0C0E",
-    "editor.foreground": "#FFFFFF",
-    "editorCursor.foreground": "#FFE600",
-    "editor.lineHighlightBackground": "#15171D",
-    "editorLineNumber.foreground": "#424856",
-    "editorLineNumber.activeForeground": "#FF6B00",
-    "editor.selectionBackground": "#FF6B003D",
-    "editor.selectionHighlightBackground": "#FF6B0022",
-    "editor.wordHighlightBackground": "#FFE60026",
-    "editor.findMatchBackground": "#FF6B0066",
-    "editor.findMatchHighlightBackground": "#FFE60044",
-    "activityBar.background": "#07080A",
-    "activityBar.foreground": "#FF6B00",
-    "activityBar.inactiveForeground": "#6B7280",
-    "activityBarBadge.background": "#FF6B00",
-    "activityBarBadge.foreground": "#000000",
-    "sideBar.background": "#0E1014",
-    "sideBar.foreground": "#D1D5DB",
-    "sideBar.border": "#1A1D24",
-    "sideBarTitle.foreground": "#FFE600",
-    "sideBarSectionHeader.background": "#14161C",
-    "sideBarSectionHeader.foreground": "#FF8800",
-    "statusBar.background": "#08090B",
-    "statusBar.foreground": "#FFFFFF",
-    "statusBar.border": "#1A1D24",
-    "statusBarItem.remoteBackground": "#FF6B00",
-    "statusBarItem.remoteForeground": "#000000",
-    "titleBar.activeBackground": "#07080A",
-    "titleBar.activeForeground": "#FFFFFF",
-    "titleBar.inactiveBackground": "#07080A",
-    "tab.activeBackground": "#0B0C0E",
-    "tab.activeForeground": "#FFE600",
-    "tab.activeBorder": "#FF6B00",
-    "tab.inactiveBackground": "#0E1014",
-    "tab.inactiveForeground": "#9CA3AF",
-    "terminal.background": "#07080A",
-    "terminal.foreground": "#FFFFFF",
-    "terminalCursor.foreground": "#FFE600"
+    "focusBorder": "#FF8A3D",
+    "foreground": "#F5EDE5",
+    "descriptionForeground": "#A99B8D",
+    "errorForeground": "#FF6B6B",
+    "editor.background": "#12100F",
+    "editor.foreground": "#F5EDE5",
+    "editorCursor.foreground": "#FFB15C",
+    "editor.selectionBackground": "#FF8A3D40",
+    "editor.inactiveSelectionBackground": "#FF8A3D22",
+    "editor.selectionHighlightBackground": "#FFB15C20",
+    "editor.wordHighlightBackground": "#FFB15C24",
+    "editor.wordHighlightStrongBackground": "#FF8A3D38",
+    "editor.lineHighlightBackground": "#1D1916",
+    "editorLineNumber.foreground": "#66584D",
+    "editorLineNumber.activeForeground": "#FFAA66",
+    "editorIndentGuide.background1": "#342820",
+    "editorIndentGuide.activeBackground1": "#A85C2A",
+    "editorWhitespace.foreground": "#382D26",
+    "editor.findMatchBackground": "#C75B2A88",
+    "editor.findMatchHighlightBackground": "#FFB15C44",
+    "editorBracketMatch.background": "#FF8A3D24",
+    "editorBracketMatch.border": "#FF9B54",
+    "editorGutter.addedBackground": "#68B984",
+    "editorGutter.modifiedBackground": "#FFAA55",
+    "editorGutter.deletedBackground": "#E66B62",
+    "editorError.foreground": "#FF6B6B",
+    "editorWarning.foreground": "#FFB15C",
+    "editorInfo.foreground": "#71B7D5",
+    "editorHint.foreground": "#A99B8D",
+    "editorWidget.background": "#211B17",
+    "editorWidget.border": "#493326",
+    "editorSuggestWidget.background": "#211B17",
+    "editorSuggestWidget.border": "#493326",
+    "editorSuggestWidget.selectedBackground": "#493326",
+    "editorHoverWidget.background": "#211B17",
+    "editorHoverWidget.border": "#493326",
+    "minimap.background": "#12100F",
+    "scrollbarSlider.background": "#A85C2A55",
+    "scrollbarSlider.hoverBackground": "#FF8A3D88",
+    "scrollbarSlider.activeBackground": "#FF8A3DCC",
+    "activityBar.background": "#171310",
+    "activityBar.foreground": "#FFAA66",
+    "activityBar.inactiveForeground": "#807166",
+    "activityBar.border": "#30251D",
+    "activityBarBadge.background": "#FF8A3D",
+    "activityBarBadge.foreground": "#1A100A",
+    "sideBar.background": "#191512",
+    "sideBar.foreground": "#E8DCD1",
+    "sideBar.border": "#30251D",
+    "sideBarTitle.foreground": "#FFB15C",
+    "sideBarSectionHeader.background": "#211B17",
+    "sideBarSectionHeader.foreground": "#E8A06A",
+    "list.activeSelectionBackground": "#493326",
+    "list.activeSelectionForeground": "#FFF3E8",
+    "list.hoverBackground": "#2A211B",
+    "list.inactiveSelectionBackground": "#33271F",
+    "statusBar.background": "#211812",
+    "statusBar.foreground": "#F5EDE5",
+    "statusBar.border": "#493326",
+    "statusBar.debuggingBackground": "#9B4D22",
+    "statusBar.debuggingForeground": "#FFF3E8",
+    "statusBarItem.hoverBackground": "#493326",
+    "statusBarItem.remoteBackground": "#A85C2A",
+    "statusBarItem.remoteForeground": "#FFF3E8",
+    "titleBar.activeBackground": "#171310",
+    "titleBar.activeForeground": "#F5EDE5",
+    "titleBar.inactiveBackground": "#171310",
+    "titleBar.inactiveForeground": "#A99B8D",
+    "tab.activeBackground": "#12100F",
+    "tab.activeForeground": "#FFB15C",
+    "tab.activeBorderTop": "#FF8A3D",
+    "tab.inactiveBackground": "#191512",
+    "tab.inactiveForeground": "#A99B8D",
+    "tab.border": "#30251D",
+    "panel.background": "#15120F",
+    "panel.border": "#30251D",
+    "panelTitle.activeBorder": "#FF8A3D",
+    "panelTitle.activeForeground": "#FFB15C",
+    "panelTitle.inactiveForeground": "#A99B8D",
+    "terminal.background": "#12100F",
+    "terminal.foreground": "#F5EDE5",
+    "terminalCursor.foreground": "#FFB15C",
+    "terminal.ansiBlack": "#211B17",
+    "terminal.ansiRed": "#E66B62",
+    "terminal.ansiGreen": "#76B982",
+    "terminal.ansiYellow": "#FFB15C",
+    "terminal.ansiBlue": "#71A8C9",
+    "terminal.ansiMagenta": "#C58BB5",
+    "terminal.ansiCyan": "#6FB9B2",
+    "terminal.ansiWhite": "#F5EDE5",
+    "terminal.ansiBrightBlack": "#807166",
+    "terminal.ansiBrightRed": "#FF8178",
+    "terminal.ansiBrightGreen": "#91D49D",
+    "terminal.ansiBrightYellow": "#FFD08A",
+    "terminal.ansiBrightBlue": "#8CC5E5",
+    "terminal.ansiBrightMagenta": "#DCA6CE",
+    "terminal.ansiBrightCyan": "#8DD4CC",
+    "terminal.ansiBrightWhite": "#FFF9F3",
+    "button.background": "#C9602B",
+    "button.foreground": "#FFF7F0",
+    "button.hoverBackground": "#E2763D",
+    "input.background": "#211B17",
+    "input.foreground": "#F5EDE5",
+    "input.border": "#493326",
+    "inputOption.activeBorder": "#FF8A3D",
+    "badge.background": "#A85C2A",
+    "badge.foreground": "#FFF3E8",
+    "progressBar.background": "#FF8A3D",
+    "gitDecoration.addedResourceForeground": "#76B982",
+    "gitDecoration.modifiedResourceForeground": "#FFB15C",
+    "gitDecoration.deletedResourceForeground": "#E66B62",
+    "gitDecoration.untrackedResourceForeground": "#76B982"
   },
   "tokenColors": [
     {
       "name": "Tiger Comments",
-      "scope": [
-        "comment",
-        "comment.line",
-        "comment.line.number-sign.tiger"
-      ],
-      "settings": {
-        "foreground": "#505869",
-        "fontStyle": "italic"
-      }
+      "scope": ["comment", "comment.line", "comment.line.number-sign.tiger"],
+      "settings": {"foreground": "#8B7868", "fontStyle": "italic"}
     },
     {
-      "name": "Tiger Control Keywords (SI, CICLO, FN, RETORNAR, USAR)",
+      "name": "Tiger Control Keywords",
       "scope": [
         "keyword.control",
         "keyword.control.conditional.tiger",
@@ -66,127 +133,67 @@
         "keyword.declaration.function.tiger",
         "keyword.declaration.macro.tiger"
       ],
-      "settings": {
-        "foreground": "#FF6B00",
-        "fontStyle": "bold"
-      }
+      "settings": {"foreground": "#FF9A52", "fontStyle": "bold"}
     },
     {
-      "name": "Tiger Storage Modifiers (VAR, CONST, CAMPO)",
-      "scope": [
-        "storage.modifier",
-        "storage.modifier.tiger"
-      ],
-      "settings": {
-        "foreground": "#FF8500",
-        "fontStyle": "bold"
-      }
+      "name": "Tiger Storage Modifiers",
+      "scope": ["storage.modifier", "storage.modifier.tiger"],
+      "settings": {"foreground": "#E98B49", "fontStyle": "bold"}
     },
     {
-      "name": "Tiger Data Types (INT, STR, DEC, BOOL, HTML, NOSQL, PY, JS, C, BI)",
-      "scope": [
-        "storage.type",
-        "storage.type.tiger",
-        "storage.type.parameter.tiger"
-      ],
-      "settings": {
-        "foreground": "#FFAA00",
-        "fontStyle": "bold"
-      }
+      "name": "Tiger Data Types",
+      "scope": ["storage.type", "storage.type.tiger", "storage.type.parameter.tiger"],
+      "settings": {"foreground": "#F2B36D", "fontStyle": "bold"}
     },
     {
-      "name": "Tiger System Builtin Functions (IMPRIMIR, PRINT, LEER, INYECTAR)",
-      "scope": [
-        "support.function",
-        "support.function.tiger"
-      ],
-      "settings": {
-        "foreground": "#FFE600",
-        "fontStyle": "bold"
-      }
+      "name": "Tiger Built-in Functions",
+      "scope": ["support.function", "support.function.tiger"],
+      "settings": {"foreground": "#FFD08A", "fontStyle": "bold"}
     },
     {
-      "name": "Tiger Directives and Targets (EN, DESTINO, WAT, ASM)",
-      "scope": [
-        "keyword.control.directive",
-        "keyword.control.directive.tiger"
-      ],
-      "settings": {
-        "foreground": "#FFD000",
-        "fontStyle": "bold"
-      }
+      "name": "Tiger Directives and Targets",
+      "scope": ["keyword.control.directive", "keyword.control.directive.tiger"],
+      "settings": {"foreground": "#E9B85C", "fontStyle": "bold"}
     },
     {
-      "name": "Tiger Booleans and Constants (TRUE, FALSE)",
-      "scope": [
-        "constant.language.boolean",
-        "constant.language.boolean.tiger"
-      ],
-      "settings": {
-        "foreground": "#FFFF00",
-        "fontStyle": "bold"
-      }
+      "name": "Tiger Booleans and Constants",
+      "scope": ["constant.language.boolean", "constant.language.boolean.tiger"],
+      "settings": {"foreground": "#F0C674", "fontStyle": "bold"}
     },
     {
       "name": "Tiger Numbers",
-      "scope": [
-        "constant.numeric",
-        "constant.numeric.integer.tiger",
-        "constant.numeric.decimal.tiger",
-        "constant.numeric.hex.tiger"
-      ],
-      "settings": {
-        "foreground": "#FFF066"
-      }
+      "scope": ["constant.numeric", "constant.numeric.integer.tiger", "constant.numeric.decimal.tiger", "constant.numeric.hex.tiger"],
+      "settings": {"foreground": "#D9A96E"}
     },
     {
       "name": "Tiger Strings",
-      "scope": [
-        "string",
-        "string.quoted.double.tiger"
-      ],
-      "settings": {
-        "foreground": "#FFFFFF"
-      }
+      "scope": ["string", "string.quoted.double.tiger"],
+      "settings": {"foreground": "#B8C98A"}
     },
     {
-      "name": "Tiger Operators and Arrows (->, <-, =, +, *)",
-      "scope": [
-        "keyword.operator",
-        "keyword.operator.assignment.tiger",
-        "keyword.operator.arithmetic.tiger",
-        "keyword.operator.logical.tiger",
-        "keyword.operator.logical.word.tiger",
-        "keyword.operator.arrow.tiger"
-      ],
-      "settings": {
-        "foreground": "#FF5500",
-        "fontStyle": "bold"
-      }
+      "name": "Tiger Operators and Arrows",
+      "scope": ["keyword.operator", "keyword.operator.assignment.tiger", "keyword.operator.arithmetic.tiger", "keyword.operator.logical.tiger", "keyword.operator.logical.word.tiger", "keyword.operator.arrow.tiger"],
+      "settings": {"foreground": "#E87941", "fontStyle": "bold"}
     },
     {
       "name": "Tiger Punctuation and Separators",
-      "scope": [
-        "punctuation",
-        "punctuation.terminator.period.tiger",
-        "punctuation.separator.comma.tiger",
-        "punctuation.separator.bar.tiger"
-      ],
-      "settings": {
-        "foreground": "#FF8800"
-      }
+      "scope": ["punctuation", "punctuation.terminator.period.tiger", "punctuation.separator.comma.tiger", "punctuation.separator.bar.tiger"],
+      "settings": {"foreground": "#C98455"}
     },
     {
       "name": "Tiger Variables and Identifiers",
-      "scope": [
-        "variable",
-        "variable.other",
-        "variable.parameter.tiger",
-        "entity.name.function.tiger"
-      ],
-      "settings": {
-        "foreground": "#FFFFFF"
-      }
+      "scope": ["variable", "variable.other", "variable.parameter.tiger"],
+      "settings": {"foreground": "#F2E6D9"}
+    },
+    {
+      "name": "Tiger Function Names",
+      "scope": ["entity.name.function", "entity.name.function.tiger"],
+      "settings": {"foreground": "#E7B47A"}
+    },
+    {
+      "name": "Tiger Class and Type Names",
+      "scope": ["entity.name.type", "entity.name.class", "entity.name.type.tiger"],
+      "settings": {"foreground": "#F2A65A", "fontStyle": "bold"}
     }
   ]
 }
